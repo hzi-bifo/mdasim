@@ -32,18 +32,18 @@
 
 #Linux, icc with openmp & pthread
 #CPP = g++
-#CPP = mpic++
+CPP = mpic++
 #CPPFLAGS = -m64 -fopenmp -O3 -s -static
-#MPICPPFLAGS = -I/usr/lib/openmpi/include -I/usr/lib/openmpi/include/openmpi -pthread -L/usr/lib/openmpi/lib -lmpi_cxx -lmpi -lopen-rte -lopen-pal -ldl -lnsl -lutil -lm -ldl -Wl,--export-dynamic
-#CPPFLAGS = -m64 -openmp -pthread -O3 -DMAXK=$(MAXK) -DFIXEDPOINTPROB=1 $(MPICPPFLAGS)
+MPICPPFLAGS = -I/usr/lib/openmpi/include -I/usr/lib/openmpi/include/openmpi -pthread -L/usr/lib/openmpi/lib -lmpi_cxx -lmpi -lopen-rte -lopen-pal -ldl -lnsl -lutil -lm -ldl -Wl,--export-dynamic
+CPPFLAGS = -m64 -openmp -pthread -O3 -DMAXK=$(MAXK) -DFIXEDPOINTPROB=1 $(MPICPPFLAGS)
 
 #Linux, gcc with openmp
-CPP = g++
+#CPP = g++
 #CPPFLAGS = -m64 -fopenmp -O3 -s -static
 #PROFILINGFLAG = -pg
 #VALGRINDFLAG = -g
 #DEBUGFLAG = -g
-CPPFLAGS = -m64 -fopenmp -O3 $(PROFILINGFLAG) $(DEBUGFLAG) -s
+#CPPFLAGS = -m64 -fopenmp -O3 $(PROFILINGFLAG) $(DEBUGFLAG) -s
 LIBEXT = a
 LIBCREATE = rcs
 LIBTOOL = ar 
