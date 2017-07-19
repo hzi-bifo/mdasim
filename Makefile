@@ -34,7 +34,7 @@
 #CPP = g++
 CPP = mpic++
 #CPPFLAGS = -m64 -fopenmp -O3 -s -static
-MPICPPFLAGS = -I/usr/lib/openmpi/include -I/usr/lib/openmpi/include/openmpi -pthread -L/usr/lib/openmpi/lib -lmpi_cxx -lmpi -lopen-rte -lopen-pal -ldl -lnsl -lutil -lm -ldl -Wl,--export-dynamic
+MPICPPFLAGS = -pthread -lmpi_cxx -lmpi -lopen-rte -lopen-pal -ldl -lnsl -lutil -lm -ldl -Wl,--export-dynamic
 CPPFLAGS = -m64 -openmp -pthread -O3 -DMAXK=$(MAXK) -DFIXEDPOINTPROB=1 $(MPICPPFLAGS)
 
 #Linux, gcc with openmp
