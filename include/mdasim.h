@@ -43,6 +43,7 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
 #include <utility>
 
 #include "commonMDA.h"
+#include "getopt.h"
 
 #define CoverageToPrimerConst 1000
 
