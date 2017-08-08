@@ -50,7 +50,7 @@ LIBTOOL = ar
 
 PACKAGENAME = mdasim
 
-BASE = .
+BASE = $(prefix)
 OBJDIR = $(BASE)/obj
 BINDIR = $(BASE)/bin
 SRCDIR = $(BASE)/src
