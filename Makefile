@@ -50,11 +50,13 @@ LIBTOOL = ar
 
 PACKAGENAME = mdasim
 
-BASE = $(prefix)
-OBJDIR = $(BASE)/obj
-BINDIR = $(BASE)/bin
+TARGET = $(prefix)
+OBJDIR = $(TARGET)/obj
+BINDIR = $(TARGET)/bin
+LIBDIR = $(TARGET)/lib
+
+BASE = ./
 SRCDIR = $(BASE)/src
-LIBDIR = $(BASE)/lib
 INCLUDEDIR = $(BASE)/include
 
 HYDALIB = $(LIBDIR)/lib$(PACKAGENAME).${LIBEXT}
