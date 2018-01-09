@@ -1,0 +1,48 @@
+mdasim 1.2 (MDAsim 1.2) 
+Author: Zeinab Taghavi
+Copyright (C) 2012-2013
+Wayne State University
+Detroit, MI
+**************************************
+../bin/mdasim -I=Staphylococcus_aureus_USA300_FPR3757.fa -C=50 
+ 
+Output amplicons file name = outAmplicons.fasta
+Average number of synthesized bases per phi29 = 70000 nt
+Average expected coverage = 50
+Minimum length of output amplicons = 10
+Number of synthesized bases per phi29 in each step = 10000 nt
+
+**************************************
+Loading reference DNA sequence ...
+DNA sequence loaded.
+Average initial primer counts (primerNo) = 2051000
+
+Normalized number of primers attached in each step (alpha) = 5e-12
+Number of primers attached in the first step (attachNum) = 29
+attachNum = alpha * input DNA length * primerNo
+
+
+Loading primers ...
+Primer list loaded.
+
+Primers length = 6
+Number of primers = 4096
+
+**************************************
+Amplification started ...
+**************************************
+Step = 20 > frag No = 772, cov = 12.0762
+Step = 40 > frag No = 1948, cov = 21.3111
+Step = 60 > frag No = 4176, cov = 36.1629
+Step = 73 > frag No = 6558, cov = 50.7737
+
+Cleavage started ...
+Writing amplicons in outAmplicons.fasta
+
+Average length of amplicons = 15167.6
+Total Coverage = 51.7737
+
+Cleavage finished.
+**************************************
+Amplification finished.
+**************************************

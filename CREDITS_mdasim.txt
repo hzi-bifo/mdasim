@@ -1,0 +1,4 @@
+Most part of the code in MDAsim 1.2 is written by Zeinab Taghavi (ztaghavi@wayne.edu). 
+Some part of the code is borrowed from package HyDA (http://sourceforge.net/projects/hyda/).
+
+Many thanks to Hamidreza Chitsaz and Sorin Draghici for helpful discussions.
