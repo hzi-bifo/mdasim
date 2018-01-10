@@ -22,7 +22,7 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
  * Title:          mdasim.C
  * Author:         Zeinab Taghavi
  * Created:        2012
- * Last modified:  5/27/2014
+ * Last modified:  1/10/2018    by Victoria Sack, see comments (marked with #1.3)
  *
  * Copyright (c) 2012- Zeinab Taghavi
  * All Rights Reserved
@@ -108,6 +108,82 @@ inline Base reverseComplement(Base base)
 		case 'U': return 'A';
 		default: return 'T';
 	}
+}
+
+/** Inline method that has been added to the software of MDAsim 1.2
+ * to provide occasional single nucleotide copyerrors for version 1.3
+ * #1.3
+ * @brief mutateBase
+ * @param base      original base
+ * @return          another base than the input base, with a chance of 1/3rd per possible alternative
+ */
+inline Base mutateBase(Base base)
+{
+        double r = (double)rand()/(double)(RAND_MAX);
+        switch(toupper(base))
+        {
+                case 'C':   if(r <= (1.0/3.0))
+                            {
+                                return 'G';
+                            }
+                            else if(r > (1.0/3.0) && r <= (2.0/3.0))
+                            {
+                                return 'T';
+                            }
+                            else
+                            {
+                                return 'A';
+                            }
+                case 'G':   if(r <= (1.0/3.0))
+                            {
+                                return 'C';
+                            }
+                            else if(r > (1.0/3.0) && r <= (2.0/3.0))
+                            {
+                                return 'T';
+                            }
+                            else
+                            {
+                                return 'A';
+                            }
+                case 'T':   if(r <= (1.0/3.0))
+                            {
+                                return 'G';
+                            }
+                            else if(r > (1.0/3.0) && r <= (2.0/3.0))
+                            {
+                                return 'C';
+                            }
+                            else
+                            {
+                                return 'A';
+                            }
+                case 'U':   if(r <= (1.0/3.0))
+                            {
+                                return 'G';
+                            }
+                            else if(r > (1.0/3.0) && r <= (2.0/3.0))
+                            {
+                                return 'C';
+                            }
+                            else
+                            {
+                                return 'A';
+                            }
+                case 'A':   if(r <= (1.0/3.0))
+                            {
+                                return 'G';
+                            }
+                            else if(r > (1.0/3.0) && r <= (2.0/3.0))
+                            {
+                                return 'C';
+                            }
+                            else
+                            {
+                                return 'T';
+                            }
+                default: return 'T';
+        }
 }
 
 
@@ -600,7 +676,21 @@ void OneStepAheadPhi29()
 			FragmentBase newBase, originalBase;
 			originalBase = fragmentList.at(positionOnOriginalFrag.fragmentNo1 - 1).dna.at(positionOnOriginalFrag.pos);
 			newBase.base = reverseComplement(originalBase.base);
-				//Single nucleotide substitution error should happen here!!
+
+                        //*******************************************************************
+                        // Single nucleodite errors are generated here for version 1.3
+                        // #1.3
+
+                        double r = (double)rand()/(double)(RAND_MAX);
+                        if(r <= 0.00000295)
+                        {
+                            //std::cout << newBase.base << " to ";
+                            newBase.base = mutateBase(newBase.base);
+                            //std::cout << newBase.base << std::endl;
+                        }
+
+                        //*******************************************************************
+
 			newBase.occupancy.fragmentNo1 = positionOnOriginalFrag.fragmentNo1;
 			newBase.occupancy.pos = positionOnOriginalFrag.pos;
 			fragmentList.at(positionOnNewFrag.fragmentNo1 - 1).dna.push_back(newBase);
