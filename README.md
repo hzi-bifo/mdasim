@@ -21,7 +21,7 @@ For credits, please refer to the [CREDITS_mdasim.txt](https://github.com/hzi-bif
 More information about the GNU General Public License can be found in [LICENSE.txt](https://github.com/hzi-bifo/mdasim/blob/master/LICENSE.txt).
 This repository also contains the original [README_mdasim1-2.txt](https://github.com/hzi-bifo/mdasim/blob/master/README_mdasim1-2.txt) for your convenience.
 
-## USAGE
+## Usage
 To build MDAsim 1.3, please do
 ```
 	$ cd mdasim
