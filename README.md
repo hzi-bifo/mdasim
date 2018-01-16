@@ -1,6 +1,6 @@
 # MDAsim 1.3
 
->January 16, 2018
+January 16, 2018
 David Lähnemann (david.laehnemann@helmholtz-hzi.de)
 Helmholtz Centre for Infection Research
 Braunschweig, Germany
@@ -43,7 +43,7 @@ The cmd-line arguments work just as in MDAsim 1.2, please refer to the section *
 ----------------------------------------------------------------------------------
 
 ## MDAsim 1.2
->May 27, 2014
+May 27, 2014
 Zeinab Taghavi
 ztaghavi@wayne.edu
 Wayne State University
