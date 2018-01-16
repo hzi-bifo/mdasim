@@ -1,9 +1,13 @@
 # MDAsim 1.3
 
 January 16, 2018
+
 David Lähnemann (david.laehnemann@helmholtz-hzi.de)
+
 Helmholtz Centre for Infection Research
+
 Braunschweig, Germany
+
 ----------------------------------------------------------------------------------
 In order to incorporate single nucleotide copy errors, the functionality of MDAsim 1.3 adds to that of 1.2. The files that have been altered were the Makefile, mdasim.h (see patch-file), commonmda.c and mdasim.c (see files itself). Currently, the error rate is hard coded 2.95^-6, but we are planning on making it a cmd-line parameter in the future. Other than that, the functionality of MDAsim remains the same. For the original contents of the README of MDAsim1.2, see below.
 
@@ -43,11 +47,17 @@ The cmd-line arguments work just as in MDAsim 1.2, please refer to the section *
 ----------------------------------------------------------------------------------
 
 ## MDAsim 1.2
+
 May 27, 2014
+
 Zeinab Taghavi
+
 ztaghavi@wayne.edu
+
 Wayne State University
+
 Detroit, MI
+
 ----------------------------------------------------------------------------------
 ### SUMMARY
 + A/ Credits
