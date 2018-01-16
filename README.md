@@ -6,7 +6,7 @@
 
 + [Credits and License](https://github.com/hzi-bifo/mdasim/blob/master/README.md#credits-and-license)
 + [Usage](https://github.com/hzi-bifo/mdasim/blob/master/README.md#usage)
-+ [Examples](https://github.com/hzi-bifo/mdasim#examples)
++ [Example](https://github.com/hzi-bifo/mdasim#example)
 + [Accompaying files](https://github.com/hzi-bifo/mdasim/blob/master/README.md#accompaying-files)
 + [Change Log](https://github.com/hzi-bifo/mdasim/blob/master/README.md#change-log)
 + [Reference](https://github.com/hzi-bifo/mdasim#references)
