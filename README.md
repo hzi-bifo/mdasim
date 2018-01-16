@@ -28,7 +28,7 @@ or
 $ make prefix=Path/to/desired/build/folder
 ```
 Please note that the target folder has to contain (empty) `obj` and `bin`-subfolders as well as the `lib`-folder.
-The cmd-line arguments work just as in MDAsim 1.2, please refer to the section **D/ Usage**.
+The cmd-line arguments work just as in MDAsim 1.2, please refer to the section [D/ Usage](https://github.com/hzi-bifo/mdasim#d-usage).
 
 ## MDAsim 1.3 Change Log
 | DATE         | CHANGES                                                                    | NOTES                 |
@@ -60,13 +60,13 @@ Detroit, MI
 
 ----------------------------------------------------------------------------------
 ### SUMMARY
-+ A/ Credits
-+ B/ Accompaying files
-+ C/ Compile
-+ D/ Usage
-+ E/ Examples
-+ F/ Q&A
-+ G/ Reference
++ [A/ Credits](https://github.com/hzi-bifo/mdasim/blob/master/README.md#a-credits)
++ [B/ Accompaying files](https://github.com/hzi-bifo/mdasim/blob/master/README.md#B-Accompaying-files)
++ [C/ Compile](https://github.com/hzi-bifo/mdasim#c-compile)
++ [D/ Usage](https://github.com/hzi-bifo/mdasim#d-usage)
++ [E/ Examples](https://github.com/hzi-bifo/mdasim#e-examples)
++ [F/ Q&A](https://github.com/hzi-bifo/mdasim#f-qa)
++ [G/ Reference](https://github.com/hzi-bifo/mdasim#g-references)
 
 ----------------------------------------------------------------------------------
 ### A/ Credits
@@ -137,6 +137,7 @@ The accompanying example files with the package are
 
 **Q1** - What is the format of outAmplicons.fasta?
 **A1** - The format is fasta. The ID line of each amplicon is in the following format:
+
 ```>XX | name = RXX | fragment = XX | position = XX```
 
 The first two values of the ID line for each amplicon is the length of the amplicon and the name of the amplicon. The name of the amplicon is in the format of R(Index of the amplicon). Indexes of amplicons start from 1 and increase for each amplicon by one. The last one shows the total number of amplicons in the file.
