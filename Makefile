@@ -51,6 +51,7 @@ LIBTOOL = ar
 PACKAGENAME = mdasim
 
 TARGET = $(prefix)
+
 OBJDIR = $(TARGET)/obj
 BINDIR = $(TARGET)/bin
 LIBDIR = $(TARGET)/lib
@@ -72,28 +73,35 @@ HYDA = $(subst $(SRCDIR)/$(PACKAGENAME)/,$(BINDIR)/,$(HYDASRCS:.C=))
 
 .PHONY: clean $(PACKAGENAME) lib
 
-all : lib $(PACKAGENAME)
+all : lib $(PACKAGENAME) 
 
-lib: $(LIBOBJECTS) $(HYDALIB)
+lib: $(LIBOBJECTS) $(HYDALIB) 
 
-$(HYDALIB): $(LIBOBJECTS)
+objdir: 
+	mkdir -p $(OBJDIR)
+bindir: 
+	mkdir -p $(BINDIR)
+libdir:
+	mkdir -p $(LIBDIR)
+
+$(HYDALIB): $(LIBOBJECTS) | libdir
 	@ echo libtool: $(LIBTOOL) 
 	@ echo libcreat: $(LIBCREATE)
-	$(LIBTOOL) $(LIBCREATE) $@ $(LIBOBJECTS)
+	$(LIBTOOL) $(LIBCREATE) $@ $(LIBOBJECTS) 
 
 $(PACKAGENAME): $(HYDAOBJECTS) $(HYDA)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.C
-	$(CPP) $(CPPFLAGS) -I$(INCLUDEDIR) -c $< -o $@
+$(OBJDIR)/%.o: $(SRCDIR)/%.C | objdir
+	$(CPP) $(CPPFLAGS) -I$(INCLUDEDIR) -c $< -o $@ 
 
-$(BINDIR)/%: $(OBJDIR)/%.o $(HYDALIB)
+$(BINDIR)/%: $(OBJDIR)/%.o $(HYDALIB) | bindir
 	$(CPP) $(CPPFLAGS) $< -L$(LIBDIR) -l$(PACKAGENAME) -o $@
 
 $(LIBSRCSTEMP): $(LIBHEADERTEMP) 
 
 clean :
 	rm -f obj/*.o *~ src/*~ include/*~ bin/* lib/*
-
+	rm -f -r obj bin lib
 
 
 
