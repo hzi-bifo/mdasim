@@ -54,51 +54,25 @@ TARGET = $(prefix)
 
 OBJDIR = $(TARGET)/obj
 BINDIR = $(TARGET)/bin
-LIBDIR = $(TARGET)/lib
 
 BASE = ./
 SRCDIR = $(BASE)/src
 INCLUDEDIR = $(BASE)/include
 
-HYDALIB = $(LIBDIR)/lib$(PACKAGENAME).${LIBEXT}
-
-LIBSRCS = $(sort $(wildcard $(SRCDIR)/lib/*.C))
-LIBSRCSTEMP = $(subst /lib/,/,$(LIBSRCS))
-LIBHEADERTEMP = $(subst $(SRCDIR)/,$(INCLUDEDIR)/,$(LIBSRCSTEMP:.C=.h))
-LIBOBJECTS = $(subst $(SRCDIR)/lib/,$(OBJDIR)/,$(LIBSRCS:.C=.o))
-
-HYDASRCS = $(sort $(wildcard $(SRCDIR)/$(PACKAGENAME)/*.C))
-HYDAOBJECTS = $(subst $(SRCDIR)/$(PACKAGENAME)/,$(OBJDIR)/,$(HYDASRCS:.C=.o))
-HYDA = $(subst $(SRCDIR)/$(PACKAGENAME)/,$(BINDIR)/,$(HYDASRCS:.C=))
-
 .PHONY: clean $(PACKAGENAME) lib
 
-all : lib $(PACKAGENAME) 
-	@ echo "Built target MDAsim 2.0"
+all : $(BINDIR)/$(PACKAGENAME)
 
-lib: $(LIBOBJECTS) $(HYDALIB) 
+$(OBJDIR): 
+	mkdir -p $(OBJDIR)
+$(BINDIR): 
+	mkdir -p $(BINDIR)
 
-objdir: 
-	@ mkdir -p $(OBJDIR)
-bindir: 
-	@ mkdir -p $(BINDIR)
-libdir:
-	@ mkdir -p $(LIBDIR)
-
-$(HYDALIB): $(LIBOBJECTS) | libdir
-	@ echo libtool: $(LIBTOOL) 
-	@ echo libcreat: $(LIBCREATE)
-	$(LIBTOOL) $(LIBCREATE) $@ $(LIBOBJECTS) 
-
-$(PACKAGENAME): $(HYDAOBJECTS) $(HYDA)
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.C | objdir
+$(OBJDIR)/%.o: $(SRCDIR)/%.C | $(OBJDIR)
 	$(CPP) $(CPPFLAGS) -I$(INCLUDEDIR) -c $< -o $@ 
 
-$(BINDIR)/%: $(OBJDIR)/%.o $(HYDALIB) | bindir
-	$(CPP) $(CPPFLAGS) $< -L$(LIBDIR) -l$(PACKAGENAME) -o $@
-
-$(LIBSRCSTEMP): $(LIBHEADERTEMP) 
+$(BINDIR)/%: $(OBJDIR)/%.o | $(BINDIR)
+	$(CPP) $(CPPFLAGS) $< -l$(PACKAGENAME) -o $@
 
 clean :
 	rm -f obj/*.o *~ src/*~ include/*~ bin/* lib/*
