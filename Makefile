@@ -74,15 +74,16 @@ HYDA = $(subst $(SRCDIR)/$(PACKAGENAME)/,$(BINDIR)/,$(HYDASRCS:.C=))
 .PHONY: clean $(PACKAGENAME) lib
 
 all : lib $(PACKAGENAME) 
+	@ echo "Built target MDAsim 2.0"
 
 lib: $(LIBOBJECTS) $(HYDALIB) 
 
 objdir: 
-	mkdir -p $(OBJDIR)
+	@ mkdir -p $(OBJDIR)
 bindir: 
-	mkdir -p $(BINDIR)
+	@ mkdir -p $(BINDIR)
 libdir:
-	mkdir -p $(LIBDIR)
+	@ mkdir -p $(LIBDIR)
 
 $(HYDALIB): $(LIBOBJECTS) | libdir
 	@ echo libtool: $(LIBTOOL) 
