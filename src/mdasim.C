@@ -1,7 +1,7 @@
 /*
 Copyright 2018- Victoria Sack (victoria.sack@helmholtz-hzi.de)
 
-    This file is part of MDAsim 1.3.
+    This file is part of MDAsim 2,0.
 
     MDAsim is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ Copyright 2018- Victoria Sack (victoria.sack@helmholtz-hzi.de)
  * Copyright (c) 2018- Victoria Sack
  * All Rights Reserved
  * See file LICENSE for details.
- * Altered Code is marked with #1.3
+ * Altered Code is marked with #2.0
  ***************************************************************************/
 
 /*
@@ -70,10 +70,11 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
 #include "sequence.C"
 
 #define FILE_STRING (char *)"mdasim"
-#define FILE_VERSION (char *)"mdasim 1.2"
+#define FILE_VERSION (char *)"mdasim 2.0"
 #define MAXFILECHAR	2000
 
 Option OPTIONS[] = {
+        Option('m', (char *)"mutationrate", NEEDS_ARG, (char *)"=chance of a nucleotide substitution"),       //#2.0
 	Option('V', (char *)"version", NO_ARG, (char *)"prints the version"),
 	Option('h', (char *)"help", NO_ARG, (char *)"shows this help"),
 	Option('v', (char *)"verbose", NO_ARG, (char *)"extended verbose for debug mode"),
@@ -93,7 +94,7 @@ Option OPTIONS[] = {
 	Option(0, NULL, 0, NULL)
 };
 
-
+double mutationRate = 0.00000295;          //#2.0
 Coord dnaLength = 0;
 Coord frgAveLength = 70000;
 Coverage aveCoverage = 1000;
@@ -710,11 +711,11 @@ void OneStepAheadPhi29()
 			newBase.base = reverseComplement(originalBase.base);
 
                         //*******************************************************************
-                        // Single nucleodite errors are generated here for version 1.3
-                        // #1.3
+                        // Single nucleodite errors are generated here for version 2.0
+                        // #2.0
 
                         double r = (double)rand()/(double)(RAND_MAX);
-                        if(r <= 0.00000295)
+                        if(r <= mutationRate)
                         {
                             //std::cout << newBase.base << " to ";
                             newBase.base = mutateBase(newBase.base);
@@ -904,7 +905,7 @@ int main(int argc, char *argv[])
 		{
 			version(FILE_VERSION);
 			exit(EXIT_SUCCESS);
-		}
+		}                
       		else if (count == 'h')
 		{
 			printf("Usage: ");
@@ -919,10 +920,10 @@ int main(int argc, char *argv[])
 			FragmentasInput = true;
 		else if (count == 'I')
 			inputFileName = current->getArg();
-		else if (count == 'O')
-		{
-			outputName = current->getArg();
-		}
+                else if (count == 'O')
+                        outputName = current->getArg();
+                else if (count == 'm')                                        //#2.0
+                        mutationRate = strtod(current->getArg(), NULL);
 		else if (count == 'o')
 			Writefragmentasoutput = true;
 		else if (count == 'P')
