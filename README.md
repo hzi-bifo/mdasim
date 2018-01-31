@@ -1,6 +1,6 @@
-# MDAsim 1.3
+# MDAsim 2.0
 ----------------------------------------------------------------------------------
-*In order to incorporate single nucleotide copy errors, the functionality of MDAsim 1.3 adds to that of 1.2. The files that have been altered were the Makefile, mdasim.h (see patch-file), commonmda.c and mdasim.c (see files itself). Currently, the error rate is hard coded 2.95^-6, but we are planning on making it a cmd-line parameter in the future. Other than that, the functionality of MDAsim remains the same.*
+*In order to incorporate single nucleotide copy errors, the functionality of MDAsim 2.0 adds to that of 1.2. The files that have been altered were the Makefile, mdasim.h (see patch-file), commonmda.c and mdasim.c (see files itself). Currently, the error rate is hard coded 2.95^-6, but we are planning on making it a cmd-line parameter in the future. Other than that, the functionality of MDAsim remains the same.*
 
 ## SUMMARY
 
@@ -22,7 +22,7 @@ More information about the GNU General Public License can be found in [LICENSE.t
 This repository also contains the original [README_mdasim1-2.txt](https://github.com/hzi-bifo/mdasim/blob/master/README_mdasim1-2.txt) for your convenience.
 
 ## Usage
-To build MDAsim 1.3, please do
+To build MDAsim 2.0, please do
 ```
 	$ cd mdasim
 	$ make clean
@@ -69,7 +69,7 @@ The accompanying example files with the package are
 
 ## Accompaying files
 
-+ Source code of MDAsim 1.3
++ Source code of MDAsim 2.0
 + Example files
     + primerList.fasta: list of input primers.
     + Staphylococcus_aureus_USA300_FPR3757.fa: reference input dna sequence.
@@ -80,7 +80,7 @@ The accompanying example files with the package are
 | DATE         | CHANGES                                                                    | NOTES                 |
 | ------------:|:---------------------------------------------------------------------------|:----------------------|
 | **01/16/18** | README.md with change log                                                  |                       |
-| **01/10/18** | Initialisation of MDAsim 1.3 Repository, applied patch                     |                       |
+| **01/10/18** | Initialisation of MDAsim 2.0 Repository, applied patch                     |                       |
 |              | License and credit correction                                              |                       |
 |              | Implemented single nucleotide copy errors with fixed, hardcoded error rate |                       |
 | **08/09/17** | Makefile: Differentiation between BASE and TARGET dirs                     | Patch for MDAsim 1.2  |

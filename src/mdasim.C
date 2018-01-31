@@ -144,8 +144,8 @@ inline Base reverseComplement(Base base)
 }
 
 /** Inline method that has been added to the software of MDAsim 1.2
- * to provide occasional single nucleotide copyerrors for version 1.3
- * #1.3
+ * to provide occasional single nucleotide copyerrors for version 2.0
+ * #2.0
  * @brief mutateBase
  * @param base      original base
  * @return          another base than the input base, with a chance of 1/3rd per possible alternative
@@ -905,7 +905,7 @@ int main(int argc, char *argv[])
 		{
 			version(FILE_VERSION);
 			exit(EXIT_SUCCESS);
-		}                
+		}
       		else if (count == 'h')
 		{
 			printf("Usage: ");

@@ -80,7 +80,7 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 
 
 /***************************************************************************
- * Title:          commonMDA.C 
+ * Title:          commonMDA.C
  * Author:         Hamidreza Chitsaz
  * Created:        2011
  * Last modified:  10/10/2011
@@ -102,9 +102,10 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 void version(char* prog)
 {
         //******************************************************
-        // altered to #1.3
+        // altered to #2.0
 
-        printf("mdasim 1.3 (MDAsim 1.3) \n");
+        printf("%s (%s) \n", prog, PACKAGE_STRING);
+
         puts("Author: D.Lähnemann and V.Sack");
         puts("Copyright (C) 2018");
         puts("Helmholtz Centre for Infection Reseach");
@@ -113,7 +114,7 @@ void version(char* prog)
 
         //******************************************************
 
-        printf("%s (%s) \n", prog, PACKAGE_STRING);
+        printf("mdasim 1.2 (MDAsim 1.2) \n");
 	puts("Author: Zeinab Taghavi");
 	puts("Copyright (C) 2012-2013");
 	puts("Wayne State University");
@@ -130,7 +131,7 @@ FILE *open_file(char *fname, const char *mode)
 		strcat(buf, " in mode ");
 		strncat(buf, (char *)mode, 100);
 		strcat(buf, ".\n");
-		exitMsg(buf, FILE_OPEN_ERROR); 
+		exitMsg(buf, FILE_OPEN_ERROR);
 	}
 	return ret;
 }

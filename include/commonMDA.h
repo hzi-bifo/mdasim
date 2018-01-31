@@ -18,7 +18,7 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 /***************************************************************************
- * Title:          commonMDA.h  
+ * Title:          commonMDA.h
  * Author:         (modified by) Zeinab Taghavi
  * Created:        2012
  * Last modified:  05/27/2014
@@ -51,7 +51,7 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 
 
 /***************************************************************************
- * Title:          commonMDA.h 
+ * Title:          commonMDA.h
  * Author:         Hamidreza Chitsaz
  * Created:        2011
  * Last modified:  10/10/2011
@@ -83,7 +83,7 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 #define false 0
 #endif
 
-#define PACKAGE_STRING "MDAsim 1.2"
+#define PACKAGE_STRING "MDAsim 2.0"
 
 //#define MIN(A, B)  (((A) < (B)) ? (A) : (B))
 //#define MAX(A, B)  (((A) < (B)) ? (B) : (A))
@@ -92,10 +92,10 @@ void version(char* prog);
 
 typedef enum {
 	NO_ERROR = 0,
-	FILE_OPEN_ERROR = 1, 
-	UNITIGS_FILE_ERROR = 2, 
-	CONFIG_FILE_ERROR = 3, 
-	INTERNAL_DIJKSTRA_ERROR = 4, 
+	FILE_OPEN_ERROR = 1,
+	UNITIGS_FILE_ERROR = 2,
+	CONFIG_FILE_ERROR = 3,
+	INTERNAL_DIJKSTRA_ERROR = 4,
 	INTERNAL_RADIXHEAP_ERROR = 5,
 	INTERNAL_SPLAYTREE_ERROR = 6,
 	INPUT_ARG_ERROR = 7,
@@ -110,4 +110,3 @@ void exitMsg(char *, Error);
 
 
 #endif
-

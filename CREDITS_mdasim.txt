@@ -1,8 +1,7 @@
-Most part of the code in MDAsim 1.2 is written by Zeinab Taghavi (ztaghavi@wayne.edu). 
+Most part of the code in MDAsim 1.2 is written by Zeinab Taghavi (ztaghavi@wayne.edu).
 Some part of the code is borrowed from package HyDA (http://sourceforge.net/projects/hyda/).
 
 Many thanks to Hamidreza Chitsaz and Sorin Draghici for helpful discussions.
 
 Patch of the Makefile and include/mdasim.h has been written by David Lähnemann (david.laehnemann@helmholtz-hzi.de).
-Code additions for MDAsim 1.3 have been written by Victoria Sack (victoria.sack@helmholtz-hzi.de) and enforce single nucleotide copy errors.
-
+Code additions for MDAsim 2.0 have been written by Victoria Sack (victoria.sack@helmholtz-hzi.de) and enforce single nucleotide copy errors.
