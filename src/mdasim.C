@@ -64,6 +64,8 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
 //add save and load fragment instead of fragmentasInput
 
 #include <malloc.h>
+#include <unistd.h>
+
 #include "getopt.C"
 #include "mdasim.h"
 #include "commonMDA.C"
@@ -118,6 +120,10 @@ Coverage freePrimerPositionTotal = 0;
 Coverage primerCurrentNoTotal = 0;
 bool doubleStranded = true;
 
+//****
+//#2.0
+const char* errorLogFileName = "mdasim-copy-errors.log";
+FILE *errorLog;
 
 int fprintfSeq(FILE * filename, const char * format, DNAType seq)
 {
@@ -717,9 +723,13 @@ void OneStepAheadPhi29()
                         double r = (double)rand()/(double)(RAND_MAX);
                         if(r <= mutationRate)
                         {
-                            //std::cout << newBase.base << " to ";
+                            errorLog = fopen(errorLogFileName, "a+");
+                            fprintf(errorLog, "%c\t", newBase.base);
+
                             newBase.base = mutateBase(newBase.base);
-                            //std::cout << newBase.base << std::endl;
+
+                            fprintf(errorLog, "%c\n", newBase.base);
+                            fclose(errorLog);
                         }
 
                         //*******************************************************************
@@ -888,6 +898,15 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
 int main(int argc, char *argv[])
 {
 	GetOpt opts(argc, argv, OPTIONS);
+
+        //*******************************************************************
+        // error log file for version 2.0
+        // #2.0
+        //#2.0
+        errorLog = fopen(errorLogFileName, "w");
+        fprintf(errorLog, "#reference\tsubstitution\n");
+        fclose(errorLog);
+        //*******************************************************************
 
 	int files = 0;
 	string outputName ("out");
