@@ -64,7 +64,7 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
 //add save and load fragment instead of fragmentasInput
 
 #include <malloc.h>
-
+#include "getopt.C"
 #include "mdasim.h"
 #include "commonMDA.C"
 #include "sequence.C"

@@ -5,7 +5,7 @@ CPPFLAGS = -m64 -openmp -pthread -O3 -DMAXK=$(MAXK) -DFIXEDPOINTPROB=1 $(MPICPPF
 
 LIBEXT = a
 LIBCREATE = rcs
-LIBTOOL = ar 
+LIBTOOL = ar
 
 PACKAGENAME = mdasim
 
@@ -14,7 +14,7 @@ TARGET = $(prefix)
 OBJDIR = $(TARGET)/obj
 BINDIR = $(TARGET)/bin
 
-BASE = ./
+BASE = .
 SRCDIR = $(BASE)/src
 INCLUDEDIR = $(BASE)/include
 
@@ -22,22 +22,17 @@ INCLUDEDIR = $(BASE)/include
 
 all : $(BINDIR)/$(PACKAGENAME)
 
-$(OBJDIR): 
+$(OBJDIR):
 	mkdir -p $(OBJDIR)
-$(BINDIR): 
+$(BINDIR):
 	mkdir -p $(BINDIR)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.C | $(OBJDIR)
-	$(CPP) $(CPPFLAGS) -I$(INCLUDEDIR) -c $< -o $@ 
+	$(CPP) $(CPPFLAGS) -I $(INCLUDEDIR) -c $< -o $@
 
 $(BINDIR)/%: $(OBJDIR)/%.o | $(BINDIR)
-	$(CPP) $(CPPFLAGS) $< -l$(PACKAGENAME) -o $@
+	$(CPP) $(CPPFLAGS) $< -o $@
 
 clean :
 	rm -f obj/*.o *~ src/*~ include/*~ bin/* lib/*
 	rm -f -r obj bin lib
-
-
-
-
-
