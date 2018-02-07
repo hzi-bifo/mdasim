@@ -76,6 +76,7 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
 #define MAXFILECHAR	2000
 
 Option OPTIONS[] = {
+        Option('l', (char *)"log", NO_ARG, (char *)"writes all single nucleotide errors that happen during amplification into a log file"), //#2.0
         Option('m', (char *)"mutationrate", NEEDS_ARG, (char *)"=chance of a nucleotide substitution"),       //#2.0
 	Option('V', (char *)"version", NO_ARG, (char *)"prints the version"),
 	Option('h', (char *)"help", NO_ARG, (char *)"shows this help"),
@@ -96,7 +97,8 @@ Option OPTIONS[] = {
 	Option(0, NULL, 0, NULL)
 };
 
-double mutationRate = 0.00000295;          //#2.0
+bool printLog = false;                    //#2.0
+double mutationRate = 0.00000295;         //#2.0
 Coord dnaLength = 0;
 Coord frgAveLength = 70000;
 Coverage aveCoverage = 1000;
@@ -723,13 +725,18 @@ void OneStepAheadPhi29()
                         double r = (double)rand()/(double)(RAND_MAX);
                         if(r <= mutationRate)
                         {
-                            errorLog = fopen(errorLogFileName, "a+");
-                            fprintf(errorLog, "%c\t", newBase.base);
+                            if(printLog) {
+                                errorLog = fopen(errorLogFileName, "a+");
+                                fprintf(errorLog, "%c\t", newBase.base);
 
-                            newBase.base = mutateBase(newBase.base);
+                                newBase.base = mutateBase(newBase.base);
 
-                            fprintf(errorLog, "%c\n", newBase.base);
-                            fclose(errorLog);
+                                fprintf(errorLog, "%c\n", newBase.base);
+                                fclose(errorLog);
+                            } else {
+                                newBase.base = mutateBase(newBase.base);
+                            }
+
                         }
 
                         //*******************************************************************
@@ -899,15 +906,6 @@ int main(int argc, char *argv[])
 {
 	GetOpt opts(argc, argv, OPTIONS);
 
-        //*******************************************************************
-        // error log file for version 2.0
-        // #2.0
-        //#2.0
-        errorLog = fopen(errorLogFileName, "w");
-        fprintf(errorLog, "#reference\tsubstitution\n");
-        fclose(errorLog);
-        //*******************************************************************
-
 	int files = 0;
 	string outputName ("out");
 	string inputFileName ("reference.fasta");
@@ -933,6 +931,8 @@ int main(int argc, char *argv[])
 			printf("%s\n", opts.help());
 			exitMsg(NULL, NO_ERROR);
 		}
+                else if (count == 'l')                                      //#2.0
+                        printLog = true;
 		else if (count =='v')
 			verbose = true;
 		else if (count == 'f')
@@ -965,6 +965,16 @@ int main(int argc, char *argv[])
 			doubleStranded = false;
 
 	}
+
+        //*******************************************************************
+        // error log file for version 2.0
+        // #2.0
+        if(printLog) {
+            errorLog = fopen(errorLogFileName, "w");
+            fprintf(errorLog, "#ref\tsub\n");
+            fclose(errorLog);
+        }
+        //*******************************************************************
 
 	outputFragmentsFile = outputName;
 	outputReadsName = outputName;
