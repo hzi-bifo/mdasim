@@ -76,7 +76,7 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
 #define MAXFILECHAR	2000
 
 Option OPTIONS[] = {
-        Option('l', (char *)"log", NO_ARG, (char *)"writes all single nucleotide errors that happen during amplification into a log file"), //#2.0
+        Option('l', (char *)"log", NEEDS_ARG, (char *)"file name for a log file of all single nucleotide errors that happen during amplification"), //#2.0
         Option('m', (char *)"mutationrate", NEEDS_ARG, (char *)"=chance of a nucleotide substitution"),       //#2.0
 	Option('V', (char *)"version", NO_ARG, (char *)"prints the version"),
 	Option('h', (char *)"help", NO_ARG, (char *)"shows this help"),
@@ -97,7 +97,7 @@ Option OPTIONS[] = {
 	Option(0, NULL, 0, NULL)
 };
 
-bool printLog = false;                    //#2.0
+const char* errorLogFileName = "";        //#2.0
 double mutationRate = 0.00000295;         //#2.0
 Coord dnaLength = 0;
 Coord frgAveLength = 70000;
@@ -124,8 +124,8 @@ bool doubleStranded = true;
 
 //****
 //#2.0
-const char* errorLogFileName = "mdasim-copy-errors.log";
 FILE *errorLog;
+bool printLog = false;
 
 int fprintfSeq(FILE * filename, const char * format, DNAType seq)
 {
@@ -931,8 +931,10 @@ int main(int argc, char *argv[])
 			printf("%s\n", opts.help());
 			exitMsg(NULL, NO_ERROR);
 		}
-                else if (count == 'l')                                      //#2.0
+                else if (count == 'l') {                                     //#2.0
+                        errorLogFileName = current->getArg();
                         printLog = true;
+                }
 		else if (count =='v')
 			verbose = true;
 		else if (count == 'f')
