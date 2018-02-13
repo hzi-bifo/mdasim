@@ -1,0 +1,8 @@
+# This file may be used to create an environment using:
+# $ conda create --name scpipeline -c bioconda --file <this file>
+
+python=3.5.1
+snakemake=3.5.5
+minimap2=2.8
+samtools=1.7
+

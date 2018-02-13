@@ -1,0 +1,87 @@
+#imports
+
+#config
+configfile: "config.yaml"
+
+#all-rule
+
+#...
+rule all:
+    """
+    A comment
+    """
+    input:
+        "summary.txt"
+
+rule minimap2:
+    """
+    Another comment
+    """
+    output:
+        "aln.sam"
+    params:
+        "-ax asm5"
+    shell:
+        "minimap2 {params} "
+        + config["input"]["reference"] + " "
+        + config["input"]["amplicons"]
+        + " > {output}"
+
+rule sam:
+    """
+    Even another comment
+    """
+    input:
+        "aln.sam"
+    output:
+        "aln.bam"
+    params:
+        "-bS"
+    shell:
+        "samtools view -o {output} {params} {input}"
+
+rule sort:
+    """
+    Sorting!
+    """
+    input:
+        "aln.bam"
+    output:
+        "aln_sorted.bam"
+    shell:
+        "samtools sort -o {output} {input}"
+
+rule index:
+    """
+    Indexing!
+    """
+    input:
+        "aln_sorted.bam"
+    output:
+        "aln.bam.bai"
+    shell:
+        "samtools index {input} {output}"
+
+rule pileup:
+    """
+    Yet another comment
+    """
+    input:
+        "aln_sorted.bam"
+    output:
+        "aln.out"
+    params:
+        "-O "
+    shell:
+        "samtools mpileup -o {output} {params} {input}"
+
+rule summary:
+    """
+    Finish line!
+    """
+    input:
+        "aln.out"
+    output:
+        "summary.txt"
+    shell:
+        "python3 summary.py --input={input} --output={output}"
