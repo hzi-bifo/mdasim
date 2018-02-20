@@ -1,5 +1,5 @@
 # This file may be used to create an environment using:
-# $ conda create --name scpipeline -c bioconda --file <this file>
+# $ conda create --name mdasim_analysis -c bioconda --file <this file>
 
 python=3.5.1
 snakemake=3.5.5

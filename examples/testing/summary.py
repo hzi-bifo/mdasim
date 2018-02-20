@@ -39,28 +39,39 @@ for line in inputfile:
     bases = contents[4];
     ref_base = '';
     alt_base = '';
-    count = 0;
+    alt_count = 0;
+    ref_count = 0;
+    isQualityChar = False;
     for base in bases:
-        base = base.upper();
-        if(base.isalpha()):
-            if(ref_base is ''):
-                ref_base = base;
-            elif (ref_base != base and ref_base is not '' and base):            # TODO: what happens to those GggTttGggGgGGgggg lines? How are those counted?
-                if(alt_base is ''):
-                    alt_base = base;
-                count = count+1;
-    if(count > 0):
-        allSNPs.append({'position':position, 'ref_base':ref_base, 'alt_base':alt_base, 'count':count});
+        if(base == '^'):                                                        #beginning of a read with quality char following the '^'
+            isQualityChar = True;                                               #flag next char as no base
+        else:                                                                   #if this char does not mark the beginning of a read
+            if(isQualityChar):                                                  #check if its predecessor did
+                isQualityChar = False;                                          #in this case, the next char will be a proper base
+            else:                                                               #if the char is a normal base
+                base = base.upper();                                            #cast letter to upper case
+                if(base.isalpha()):
+                    if(ref_base is ''):                                         #set reference base if there is none so far
+                        ref_base = base;
+                        ref_count += 1;                                         #increase counter
+                    elif (ref_base == base):
+                        ref_count += 1;
+                    else:
+                        if(alt_base is ''):                                     #set alternative base if one is found
+                            alt_base = base;
+                        alt_count +=1                                           #increase counter
+    if(alt_count > 0):
+        allSNPs.append({'position':position, 'ref_base':ref_base, 'alt_base':alt_base, 'ref_count':ref_count, 'alt_count':alt_count});
         sys.stdout.write('.');
         sys.stdout.flush();
 
 sys.stdout.write(' Printing summary to file\n');
 sys.stdout.flush();
-allSNPs.sort(key=lambda x: x['count'], reverse=True);
+allSNPs.sort(key=lambda x: x['alt_count'], reverse=True);
 
 outfile = open(file_out, 'wt');
-outfile.write("#pos\tref\talt\tcnt\n");
+outfile.write("#pos\tref\talt\tr_cnt\ta_cnt\n");
 for snp in allSNPs:
-    outfile.write("" + str(snp['position']) + "\t" + snp['ref_base'] + "\t" + snp['alt_base'] + "\t" + str(snp['count']) + "\n");
+    outfile.write("" + str(snp['position']) + "\t" + snp['ref_base'] + "\t" + snp['alt_base'] + "\t" + str(snp['ref_count']) + "\t" + str(snp['alt_count']) + "\n");
 
 outfile.close();
