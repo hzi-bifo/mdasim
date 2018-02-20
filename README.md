@@ -37,6 +37,8 @@ The cmd-line arguments work just as in MDAsim 1.2, please refer to the section [
 
 To run mdasim, type `mdasim [options]`. For options, see below.
 ```
+	-l,--log      =file name for a log file of all single nucleotide errors that happen during amplification
+	-m,--mutationrate      =chance of a nucleotide substitution
 	-V,--version      prints the version
 	-h,--help      shows this help
 	-v,--verbose      extended verbose for debug mode
@@ -49,9 +51,10 @@ To run mdasim, type `mdasim [options]`. For options, see below.
 	-C,--coverage      =expected average coverage (default: 1000)
 	-s,--stepSize      =number of synthesized bases per phi29 in each step (default: 10000)
 	-A,--alpha      =normalized number of primers attached in each step (default: 0.5e-11)
-	-a,--attachNum      =number of primers attached in the first step (overrides -A; alpha = attachNum / (input reference length * primerNo))
+	-a,--attachNum      =number of primers attached per single strand of reference sequence in the first step. It can be any positive number. (overrides -A; alpha = attachNum / (input reference length * primerNo))
 	-R,--readLength      =minimum length of output amplicons (default: 10)
 	-S,--single      Input reference is amplified as a single strand sequence
+
 ```
 
 For more detailed description of the parameters refer to [1].
