@@ -59,7 +59,8 @@ typedef basic_string<Base> DNAType;
 
 struct Position {
 	FragmentID fragmentNo1; // it is fragmentNo+1
-	Coord pos;
+        Coord pos;
+        Coord original;
 	bool const operator <(const Position rhs) const
 	{ 
 		if (fragmentNo1 < rhs.fragmentNo1) 

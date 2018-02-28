@@ -518,6 +518,7 @@ void initializeFragmentList()
  	for (int i = 0; i < originalDNA.size(); i++)
 	{
 		fbaseTemp.base = originalDNA.at(i);
+                fbaseTemp.occupancy.original = i+1;
 		dnaTemp.dna.push_back(fbaseTemp);
 	};
 	fragmentList.push_back(dnaTemp);
@@ -529,6 +530,7 @@ void initializeFragmentList()
  		for (int i = 0; i < originalDNARC.size(); i++)
 		{
 			fbaseTemp.base = originalDNARC.at(i);
+                        fbaseTemp.occupancy.original = i+1;
 			dnaTemp.dna.push_back(fbaseTemp);
 		};
 		fragmentList.push_back(dnaTemp);
@@ -717,6 +719,7 @@ void OneStepAheadPhi29()
 			FragmentBase newBase, originalBase;
 			originalBase = fragmentList.at(positionOnOriginalFrag.fragmentNo1 - 1).dna.at(positionOnOriginalFrag.pos);
 			newBase.base = reverseComplement(originalBase.base);
+                        newBase.occupancy.original = originalBase.occupancy.original;
 
                         //*******************************************************************
                         // Single nucleodite errors are generated here for version 2.0
@@ -727,6 +730,7 @@ void OneStepAheadPhi29()
                         {
                             if(printLog) {
                                 errorLog = fopen(errorLogFileName, "a+");
+                                fprintf(errorLog, "%ld\t", ((long int) newBase.occupancy.original));
                                 fprintf(errorLog, "%c\t", newBase.base);
 
                                 newBase.base = mutateBase(newBase.base);
@@ -973,7 +977,7 @@ int main(int argc, char *argv[])
         // #2.0
         if(printLog) {
             errorLog = fopen(errorLogFileName, "w");
-            fprintf(errorLog, "#ref\tsub\n");
+            fprintf(errorLog, "#pos\tref\tsub\n");
             fclose(errorLog);
         }
         //*******************************************************************
