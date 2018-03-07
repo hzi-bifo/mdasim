@@ -720,7 +720,7 @@ void OneStepAheadPhi29()
 			FragmentBase newBase, originalBase;
 			originalBase = fragmentList.at(positionOnOriginalFrag.fragmentNo1 - 1).dna.at(positionOnOriginalFrag.pos);
 			newBase.base = reverseComplement(originalBase.base);
-                        newBase.occupancy.original = originalBase.occupancy.original; //#2.0
+                        newBase.occupancy.original = (-1) * originalBase.occupancy.original; //#2.0
                         //newBase.occupancy.revStrand = originalBase.occupancy.revStrand; //#2.0
 
 
@@ -737,25 +737,23 @@ void OneStepAheadPhi29()
                                 if(newBase.occupancy.original > 0)
                                 {
                                     fprintf(errorLog, "%ld\t", ((long int) newBase.occupancy.original));
+                                    fprintf(errorLog, "%c\t", newBase.base);
                                 }
                                 else
                                 {
                                     fprintf(errorLog, "%ld\t", ((long int) ((-1)*newBase.occupancy.original)));
+                                    fprintf(errorLog, "%c\t", reverseComplement(newBase.base));
                                 }
-
-                                fprintf(errorLog, "%c\t", newBase.base);
 
                                 newBase.base = mutateBase(newBase.base);
 
-                                fprintf(errorLog, "%c", newBase.base);
-
                                 if(newBase.occupancy.original > 0)
                                 {
-                                    fprintf(errorLog, "\toriginal \n");
+                                    fprintf(errorLog, "%c\n", newBase.base);
                                 }
                                 else
                                 {
-                                    fprintf(errorLog, "\treverse \n");
+                                    fprintf(errorLog, "%c\n", reverseComplement(newBase.base));
                                 }
 
                                 fclose(errorLog);
@@ -999,7 +997,7 @@ int main(int argc, char *argv[])
         // #2.0
         if(printLog) {
             errorLog = fopen(errorLogFileName, "w");
-            fprintf(errorLog, "#pos\tref\tsub\tstrand\n");
+            fprintf(errorLog, "#pos\tref\tsub\n");
             fclose(errorLog);
         }
         //*******************************************************************
