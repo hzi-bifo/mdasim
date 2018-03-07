@@ -60,7 +60,9 @@ typedef basic_string<Base> DNAType;
 struct Position {
 	FragmentID fragmentNo1; // it is fragmentNo+1
         Coord pos;
-        Coord original;
+        Coord original; //#2.0 //hacking: if original < 0, it's the reverse strand
+                               //background: the struct-size does not allow for another bool value!!
+        //bool revStrand = false; //#2.0
 	bool const operator <(const Position rhs) const
 	{ 
 		if (fragmentNo1 < rhs.fragmentNo1) 

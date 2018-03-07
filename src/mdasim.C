@@ -518,7 +518,7 @@ void initializeFragmentList()
  	for (int i = 0; i < originalDNA.size(); i++)
 	{
 		fbaseTemp.base = originalDNA.at(i);
-                fbaseTemp.occupancy.original = i+1;
+                fbaseTemp.occupancy.original = i+1; //#2.0
 		dnaTemp.dna.push_back(fbaseTemp);
 	};
 	fragmentList.push_back(dnaTemp);
@@ -530,7 +530,8 @@ void initializeFragmentList()
  		for (int i = 0; i < originalDNARC.size(); i++)
 		{
 			fbaseTemp.base = originalDNARC.at(i);
-                        fbaseTemp.occupancy.original = i+1;
+                        fbaseTemp.occupancy.original = (-1) * (originalDNARC.size()-i); //#2.0
+                        //fbaseTemp.occupancy.revStrand = 1; //#2.0
 			dnaTemp.dna.push_back(fbaseTemp);
 		};
 		fragmentList.push_back(dnaTemp);
@@ -719,7 +720,9 @@ void OneStepAheadPhi29()
 			FragmentBase newBase, originalBase;
 			originalBase = fragmentList.at(positionOnOriginalFrag.fragmentNo1 - 1).dna.at(positionOnOriginalFrag.pos);
 			newBase.base = reverseComplement(originalBase.base);
-                        newBase.occupancy.original = originalBase.occupancy.original;
+                        newBase.occupancy.original = originalBase.occupancy.original; //#2.0
+                        //newBase.occupancy.revStrand = originalBase.occupancy.revStrand; //#2.0
+
 
                         //*******************************************************************
                         // Single nucleodite errors are generated here for version 2.0
@@ -730,12 +733,31 @@ void OneStepAheadPhi29()
                         {
                             if(printLog) {
                                 errorLog = fopen(errorLogFileName, "a+");
-                                fprintf(errorLog, "%ld\t", ((long int) newBase.occupancy.original));
+
+                                if(newBase.occupancy.original > 0)
+                                {
+                                    fprintf(errorLog, "%ld\t", ((long int) newBase.occupancy.original));
+                                }
+                                else
+                                {
+                                    fprintf(errorLog, "%ld\t", ((long int) ((-1)*newBase.occupancy.original)));
+                                }
+
                                 fprintf(errorLog, "%c\t", newBase.base);
 
                                 newBase.base = mutateBase(newBase.base);
 
-                                fprintf(errorLog, "%c\n", newBase.base);
+                                fprintf(errorLog, "%c", newBase.base);
+
+                                if(newBase.occupancy.original > 0)
+                                {
+                                    fprintf(errorLog, "\toriginal \n");
+                                }
+                                else
+                                {
+                                    fprintf(errorLog, "\treverse \n");
+                                }
+
                                 fclose(errorLog);
                             } else {
                                 newBase.base = mutateBase(newBase.base);
@@ -977,7 +999,7 @@ int main(int argc, char *argv[])
         // #2.0
         if(printLog) {
             errorLog = fopen(errorLogFileName, "w");
-            fprintf(errorLog, "#pos\tref\tsub\n");
+            fprintf(errorLog, "#pos\tref\tsub\tstrand\n");
             fclose(errorLog);
         }
         //*******************************************************************
