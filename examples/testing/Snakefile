@@ -54,18 +54,6 @@ rule sort:
     shell:
         "samtools sort -o {output} {input}"
 
-rule index:
-    """
-    Index a coordinate-sorted BAM or CRAM file for fast random access
-    (not used by the rule 'all')
-    """
-    input:
-        "{outfolder}/aln_sorted.bam"
-    output:
-        "{outfolder}/aln.bam.bai"
-    shell:
-        "samtools index {input} {output}"
-
 rule pileup:
     """
     Generate pileup for the BAM file.

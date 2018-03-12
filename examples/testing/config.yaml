@@ -3,4 +3,4 @@
 input:
     amplicons: "~/Documents/Single_Cell_Project/mdasim2.0/outAmplicons.fasta"
     reference: "~/Documents/Single_Cell_Project/mdasim2.0/examples/test.fa"
-    log: "/home/vsack/Documents/Single_Cell_Project/mdasim2.0/SNPs.log"
+    log: "/home/vsack/Documents/Single_Cell_Project/mdasim2.0/SNPs_new.log"
