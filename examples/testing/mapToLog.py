@@ -35,6 +35,7 @@ sum_g_t = 0;
 sum_c_g = 0;
 sum_g_c = 0;
 
+allSNPs_sum = [];
 # #pos	ref	alt	r_cnt	a_cnt
 # 35678	C	T	890	167
 for line in summary:
@@ -43,6 +44,7 @@ for line in summary:
     if(contents[0] != '#pos'):
         ref = contents[1];
         alt = contents[2];
+        allSNPs_sum.append({'position':int(contents[0]), 'ref':ref, 'alt':alt});
         if (ref == 'A' and alt == 'T'):
             sum_a_t +=1;
         if (ref == 'T' and alt == 'A'):
@@ -68,6 +70,7 @@ for line in summary:
         if (ref == 'G' and alt == 'C'):
             sum_g_c +=1;
 
+allSNPs_sum.sort(key=lambda x: (x['position'], x['alt']), reverse=False);
 
 log = open(file_in_log, 'rt');
 
@@ -84,14 +87,16 @@ log_g_t = 0;
 log_c_g = 0;
 log_g_c = 0;
 
-# #ref	sub	
-# A	C
+# #pos 	ref	sub
+# 12	A	C
+allSNPs_log = [];
 for line in log:
     #print(line);
     contents = line.split();
-    if(contents[0] != '#ref'):
-        ref = contents[0];
-        alt = contents[1];
+    if(contents[0] != '#pos'):
+        ref = contents[1];
+        alt = contents[2];
+        allSNPs_log.append({'position':int(contents[0]), 'ref':ref, 'alt':alt});
         if (ref == 'A' and alt == 'T'):
             log_a_t +=1;
         if (ref == 'T' and alt == 'A'):
@@ -117,8 +122,18 @@ for line in log:
         if (ref == 'G' and alt == 'C'):
             log_g_c +=1;
 
+log.close();
+
+allSNPs_log.sort(key=lambda x: (x['position'], x['alt']), reverse=False);
+log = open(file_in_log, 'wt');
+log.write("#pos\tref\talt\n");
+for snp in allSNPs_log:
+    log.write("" + str(snp['position']) + "\t" + snp['ref'] + "\t" + snp['alt'] + "\n");
+
+log.close();
+
 outfile = open(file_out, 'wt');
-outfile.write("#substitution\tlog_cnt\t\tsum_cnt\n");
+outfile.write("#substitution\tlog_cnt\t\taln_cnt\n");
 outfile.write("A to T \t\t" + str(log_a_t) + "\t\t" + str(sum_a_t) + "\n");
 outfile.write("A to C \t\t" + str(log_a_c) + "\t\t" + str(sum_a_c) + "\n");
 outfile.write("A to G \t\t" + str(log_a_g) + "\t\t" + str(sum_a_g) + "\n");
@@ -135,3 +150,38 @@ outfile.write("G to C \t\t" + str(log_g_c) + "\t\t" + str(sum_g_c) + "\n");
 log.close();
 summary.close();
 outfile.close();
+
+mapfile = open("comparison_exp.txt", 'wt');
+l = 0;
+s = 0;
+mapfile.write("#ref_pos \tref_ref \talt_ref \taln_pos \taln_ref \taln_alt \tref=aln?\n")
+while(l < len(allSNPs_log) and s < len(allSNPs_sum)):
+    if(allSNPs_log[l]['position'] == allSNPs_sum[s]['position']):
+
+        mapfile.write(str(allSNPs_log[l]['position']) + "\t" + allSNPs_log[l]['ref'] + "\t" + allSNPs_log[l]['alt'] + "\t"
+        + str(allSNPs_sum[s]['position']) + "\t" + allSNPs_sum[s]['ref'] + "\t" + allSNPs_sum[s]['alt'])
+
+        if(allSNPs_log[l]['ref'] == allSNPs_sum[s]['ref'] and allSNPs_log[l]['alt'] == allSNPs_sum[s]['alt']):
+            mapfile.write("\t true \n");
+        elif(allSNPs_log[l]['ref'] == allSNPs_sum[s]['alt'] and allSNPs_log[l]['alt'] == allSNPs_sum[s]['ref']):
+            mapfile.write("\t swapped \n");
+        else:
+            mapfile.write("\t - \n");
+
+        s += 1;
+        l += 1;
+    elif(allSNPs_log[l]['position'] < allSNPs_sum[s]['position']):
+        mapfile.write(str(allSNPs_log[l]['position']) + "\t" + allSNPs_log[l]['ref'] + "\t" + allSNPs_log[l]['alt'] + "\t- \t- \t- \n")
+        l+=1;
+    else:
+        mapfile.write("- \t- \t-" + "\t" + str(allSNPs_sum[s]['position']) + "\t" + allSNPs_sum[s]['ref'] + "\t" + allSNPs_sum[s]['alt'] + "\n")
+        s+=1;
+
+while(l < len(allSNPs_log)):
+    mapfile.write(str(allSNPs_log[l]['position']) + "\t" + allSNPs_log[l]['ref'] + "\t" + allSNPs_log[l]['alt'] + "\t- \t- \t- \n")
+    l+=1;
+while(s < len(allSNPs_sum)):
+    mapfile.write("- \t- \t-" + "\t" + str(allSNPs_sum[s]['position']) + "\t" + allSNPs_sum[s]['ref'] + "\t" + allSNPs_sum[s]['alt'] + "\n")
+    s+=1;
+
+mapfile.close;
