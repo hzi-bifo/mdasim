@@ -29,18 +29,15 @@ if not os.path.exists(file_in):
 
 inputfile = open(file_in, 'rt');
 allSNPs = [];
+currentBases = {};
 
 sys.stdout.write('Analysing pileup');
 
 for line in inputfile:
     #print(line);
     contents = line.split();
-    position = contents[1];
+    position = int(contents[1]);
     bases = contents[4];
-    ref_base = '';
-    alt_base = '';
-    alt_count = 0;
-    ref_count = 0;
     isQualityChar = False;
     for base in bases:
         if(base == '^'):                                                        #beginning of a read with quality char following the '^'
@@ -51,23 +48,30 @@ for line in inputfile:
             else:                                                               #if the char is a normal base
                 base = base.upper();                                            #cast letter to upper case
                 if(base.isalpha()):
-                    if(ref_base is ''):                                         #set reference base if there is none so far
-                        ref_base = base;
-                        ref_count += 1;                                         #increase counter
-                    elif (ref_base == base):
-                        ref_count += 1;
+                    if(base in currentBases):
+                        currentBases[base] = currentBases[base]+1;                                           #increase counter
                     else:
-                        if(alt_base is ''):                                     #set alternative base if one is found
-                            alt_base = base;
-                        alt_count +=1                                           #increase counter
-    if(alt_count > 0):
-        allSNPs.append({'position':position, 'ref_base':ref_base, 'alt_base':alt_base, 'ref_count':ref_count, 'alt_count':alt_count});
+                        currentBases[base] = 1;
+    if(len(currentBases) > 1):
+        ref_base = ' ';
+        ref_count = 0;
+        for base in currentBases:                                               #find reference base (with highest count)
+            if(ref_count < currentBases[base]):
+                ref_base = base;
+                ref_count = currentBases[base];
+
+        for base in currentBases:
+            if(base != ref_base):
+                allSNPs.append({'position':position, 'ref_base':ref_base, 'alt_base':base, 'ref_count':ref_count, 'alt_count':currentBases[base]});
+
         sys.stdout.write('.');
         sys.stdout.flush();
 
+    currentBases.clear();
+
 sys.stdout.write(' Printing summary to file\n');
 sys.stdout.flush();
-allSNPs.sort(key=lambda x: x['alt_count'], reverse=True);
+allSNPs.sort(key=lambda x: x['position'], reverse=False);
 
 outfile = open(file_out, 'wt');
 outfile.write("#pos\tref\talt\tr_cnt\ta_cnt\n");
