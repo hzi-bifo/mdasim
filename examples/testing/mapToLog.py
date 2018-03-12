@@ -153,7 +153,7 @@ summary.close();
 
 l = 0;
 s = 0;
-outfile.write("#ref_pos \tlog_ref \tlog_alt \taln_pos \taln_ref \taln_alt \tref=aln?\n")
+outfile.write("#ref_pos \tmdasim_ref \tmdasim_alt \taln_pos \taln_ref \taln_alt \tref=aln?\n")
 while(l < len(allSNPs_log) and s < len(allSNPs_sum)):
     if(allSNPs_log[l]['position'] == allSNPs_sum[s]['position']):
 
