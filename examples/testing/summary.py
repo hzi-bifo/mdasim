@@ -39,12 +39,21 @@ for line in inputfile:
     position = int(contents[1]);
     bases = contents[4];
     isQualityChar = False;
+    isIndelChar = False;
+    indelCount = 0;
     for base in bases:
         if(base == '^'):                                                        #beginning of a read with quality char following the '^'
             isQualityChar = True;                                               #flag next char as no base
+        elif((base == '-' or base == '+') and not isQualityChar):               #char marks an insertion or deletion
+            isIndelChar = True;
         else:                                                                   #if this char does not mark the beginning of a read
             if(isQualityChar):                                                  #check if its predecessor did
                 isQualityChar = False;                                          #in this case, the next char will be a proper base
+            elif(isIndelChar):                                                  #if we read an indelChar we must set the counter to check how many
+                indelCount = int(base);                                         #bases that follow will not match the ref
+                isIndelChar = False;
+            elif(indelCount > 0):
+                indelCount -= 1;
             else:                                                               #if the char is a normal base
                 base = base.upper();                                            #cast letter to upper case
                 if(base.isalpha()):
