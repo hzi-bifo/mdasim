@@ -3,5 +3,4 @@ Some part of the code is borrowed from package HyDA (http://sourceforge.net/proj
 
 Many thanks to Hamidreza Chitsaz and Sorin Draghici for helpful discussions.
 
-Patch of the Makefile and include/mdasim.h has been written by David Lähnemann (david.laehnemann@helmholtz-hzi.de).
-Code additions for MDAsim 2.0 have been written by Victoria Sack (victoria.sack@helmholtz-hzi.de) and enforce single nucleotide copy errors.
+Code additions and cleanups for MDAsim 2.0 have been authored and reviewed by Victoria Sack (victoria.sack@helmholtz-hzi.de) and David Lähnemann (david.laehnemann@helmholtz-hzi.de).
