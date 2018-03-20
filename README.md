@@ -1,11 +1,10 @@
-MDAsim 2 extends the original published MDAsim 1.2 to include single nucleotide copy errors and outputs a respective log file of the introduced errors.
-The original MDAsim 1.2 can be [found on sourceforge](https://sourceforge.net/projects/mdasim/) and we have kept its [README_mdasim1-2.txt](README_mdasim1-2.txt) for reference.
+MDAsim 2 extends the original published MDAsim 1.2, with MDAsim 2.0.0 including single nucleotide copy errors and outputs a respective log file of the introduced errors.
 
+The original MDAsim 1.2 can be [found on sourceforge](https://sourceforge.net/projects/mdasim/) and we have kept its [README_mdasim1-2.txt](README_mdasim1-2.txt) for reference.
 For credits for different features, please refer to the [CREDITS_mdasim.txt](CREDITS_mdasim.txt) and the [change logs of the releases](https://github.com/hzi-bifo/mdasim/releases).
 The license, as set by the original MDAsim 1.2, is provided in [LICENSE.txt](LICENSE.txt).
 
-# SUMMARY
-
+Information on how to use and cite MDAsim 2:
 1. [Installation](#installation)
 2. [Usage](#usage)
 3. [Citation](#citation)
@@ -56,8 +55,39 @@ mdasim --help
 For an initial quick test run, you can use the provided example files (please note: the `=` between command line arguments and their respective values are required):
 ```
 cd examples
-mdasim --input=Staphylococcus_aureus_USA300_FPR3757.fa --primers=primersList.fasta --coverage=4 --output=test_mdasim_out_prefix_ >test_mdasim.log
+mdasim --input=Staphylococcus_aureus_USA300_FPR3757.fa --primers=primerList.fasta --coverage=4 --output=test_mdasim_out_prefix_ >test_mdasim.log
 ```
+## RAM requirements
+
+The required memory is linearly proportional to the size of the input genome and to the final coverage requested. E.g., for the S. aureus sample for which the size of the genome is in the order of 3M, to get 50x average coverage 6G RAM is needed. So please note that for a genome of size 3G to get average coverage of 50x, approximately 6T of RAM is needed. One suggestion to reduce the required memory size for large genomes is to break the genome to smaller pieces (may be with some overlaps), then apply MDAsim on each piece separately. 
+
+## output formats
+
+### `<out_prefix>Amplicons.fasta`
+
+The format is fasta, with the ID line of each amplicon as follows:
+
+```
+><LA> | name = R<IOA> | fragment = <OF> | position = <LPOF>
+```
+
+* `<LA>`: length of this amplicon
+* `R<IOA>`: amplicon name consisting of `R` and an amplicon index counter that starts at 1 (i.e. the last one shows the total number of amplicons in the file)
+* `<OF>`: index (`<IOA>`) of the fragment that this amplicon was created from, `0` is the input fasta sequence
+* `<LPOF>`: last position of this amplicon on the fragment that it was created from
+
+### `--log errors.log`
+
+The format of the log file for single nucleotide substitution errors is tab separated as follows:
+```
+#pos\tref\tsub
+```
+
+* `pos`: position on the original input sequence
+* `ref`: reference nucleotide in the original input sequence that was replaced
+* `sub`: nucleotide that is generated in the strand of the original input sequence
+
+For consistent reference back to the original input sequence, both `ref` and `sub` will be reported as if incorporated into the input sequence's strand. I.e., if the substitution happens in the complementary strand, both nucleotides will be complemented before logging.
 
 # Citation
 
