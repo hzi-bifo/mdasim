@@ -1,97 +1,67 @@
-# MDAsim 2.0
-----------------------------------------------------------------------------------
-*In order to incorporate single nucleotide copy errors, the functionality of MDAsim 2.0 adds to that of 1.2. The files that have been altered were the Makefile, mdasim.h (see patch-file), commonmda.c and mdasim.c (see files itself). Currently, the error rate is hard coded 2.95^-6, but we are planning on making it a cmd-line parameter in the future. Other than that, the functionality of MDAsim remains the same.*
+MDAsim 2 extends the original published MDAsim 1.2 to include single nucleotide copy errors and outputs a respective log file of the introduced errors.
+The original MDAsim 1.2 can be [found on sourceforge](https://sourceforge.net/projects/mdasim/) and we have kept its [README_mdasim1-2.txt](README_mdasim1-2.txt) for reference.
 
-## SUMMARY
+For credits for different features, please refer to the [CREDITS_mdasim.txt](CREDITS_mdasim.txt) and the [change logs of the releases](https://github.com/hzi-bifo/mdasim/releases).
+The license, as set by the original MDAsim 1.2, is provided in [LICENSE.txt](LICENSE.txt).
 
-+ [Credits and License](https://github.com/hzi-bifo/mdasim/blob/master/README.md#credits-and-license)
-+ [Usage](https://github.com/hzi-bifo/mdasim/blob/master/README.md#usage)
-+ [Example](https://github.com/hzi-bifo/mdasim#example)
-+ [Accompaying files](https://github.com/hzi-bifo/mdasim/blob/master/README.md#accompaying-files)
-+ [Change Log](https://github.com/hzi-bifo/mdasim/blob/master/README.md#change-log)
-+ [Reference](https://github.com/hzi-bifo/mdasim#references)
+# SUMMARY
 
-## Credits and License
+1. [Installation](#installation)
+2. [Usage](#usage)
+3. [Citation](#citation)
 
-MDAsim has been described in more detail in [Tagliavi, Zeinab, and Sorin Draghici. "MDAsim: A multiple displacement amplification simulator." Bioinformatics and Biomedicine (BIBM), 2012 IEEE International Conference on. IEEE, 2012](https://doi.org/10.1109/BIBM.2012.6392622).
+# Installation
 
-The original software of 1.2 can be downloaded from [Sourceforge](https://sourceforge.net/projects/mdasim/).
+## bioconda
 
-For credits, please refer to the [CREDITS_mdasim.txt](https://github.com/hzi-bifo/mdasim/blob/master/CREDITS_mdasim.txt).
-More information about the GNU General Public License can be found in [LICENSE.txt](https://github.com/hzi-bifo/mdasim/blob/master/LICENSE.txt).
-This repository also contains the original [README_mdasim1-2.txt](https://github.com/hzi-bifo/mdasim/blob/master/README_mdasim1-2.txt) for your convenience.
-
-## Usage
-To build MDAsim 2.0, please do
-```
-	$ cd mdasim
-	$ make clean
-	$ make prefix=./
-```
-or
-```
-$ make prefix=Path/to/desired/build/folder
-```
-Please note that the target folder has to contain (empty) `obj` and `bin`-subfolders as well as the `lib`-folder.
-The cmd-line arguments work just as in MDAsim 1.2, please refer to the section [D/ Usage](https://github.com/hzi-bifo/mdasim#d-usage).
-
-To run mdasim, type `mdasim [options]`. For options, see below.
-```
-	-l,--log      =file name for a log file of all single nucleotide errors that happen during amplification
-	-m,--mutationrate      =chance of a nucleotide substitution
-	-V,--version      prints the version
-	-h,--help      shows this help
-	-v,--verbose      extended verbose for debug mode
-	-I,--input      =file name of reference DNA sequence (default: reference.fasta)
-	-O,--output      =output files prefix (default: out)
-	-o,--outputfragments      writes the lists of fragments and primer positions at the end of simulation in two txt files suffixed by Fragments.txt and PrimerPositions.txt
-	-P,--primers      =file name of input primers in fasta format (default: primerList.fasta)
-	-p,--primerNo      =average number of initial available primers (default: input reference length * coverage / frgLngth * 1000)
-	-L,--frgLngth      =average number of synthesized bases per phi29 (default: 70,000 nt; synthesized bases per phi29 has uniform distribution; variance = frgLngth^2 / 1200)
-	-C,--coverage      =expected average coverage (default: 1000)
-	-s,--stepSize      =number of synthesized bases per phi29 in each step (default: 10000)
-	-A,--alpha      =normalized number of primers attached in each step (default: 0.5e-11)
-	-a,--attachNum      =number of primers attached per single strand of reference sequence in the first step. It can be any positive number. (overrides -A; alpha = attachNum / (input reference length * primerNo))
-	-R,--readLength      =minimum length of output amplicons (default: 10)
-	-S,--single      Input reference is amplified as a single strand sequence
+The easiest way to install MDAsim is via [bioconda](https://bioconda.github.io/). For the required one time setup of conda and bioconda, please refer to [bioconda's installation instructions](https://bioconda.github.io/#using-bioconda). Once this is done, all you need to do is issue the following command:
 
 ```
+conda install mdasim
+```
 
-For more detailed description of the parameters refer to [1].
+## build from source
 
-## Example
+To build MDAsim from source, download the latest [tagged release](https://github.com/hzi-bifo/mdasim/releases) and unpack it. Alternatively, you can install the latest version of the repository by cloning it with:
 
-The following command is an example of usage of mdasim
-    `$ ./bin/mdasim -I=Staphylococcus_aureus_USA300_FPR3757.fa -C=50 > mdasim_S_aureus.log`
+```
+git clone https://github.com/hzi-bifo/mdasim.git
+```
 
-The accompanying example files with the package are
-- primerList.fasta: list of input primers.
-- Staphylococcus_aureus_USA300_FPR3757.fa: reference input dna sequence.
-- mdasim_S_aureus.log: log file of the output of the command.
+Enter the created directory:
 
+```
+cd mdasim
+```
 
-## Accompaying files
+To install in a `bin` folder in this source directory, just run:
+```
+make
+```
 
-+ Source code of MDAsim 2.0
-+ Example files
-    + primerList.fasta: list of input primers.
-    + Staphylococcus_aureus_USA300_FPR3757.fa: reference input dna sequence.
-    + mdasim_S_aureus.log: log file of the output of an example command.
+To install to a `bin` folder at a custom location, run:
+```
+make prefix=path/to/desired/build/folder
+```
 
-## Change Log
+To be able to run the software from anywhere on your system, make sure that the created `bin` directory is in your `$PATH`.
 
-| DATE         | CHANGES                                                                    | NOTES                 |
-| ------------:|:---------------------------------------------------------------------------|:----------------------|
-| **01/16/18** | README.md with change log                                                  |                       |
-| **01/10/18** | Initialisation of MDAsim 2.0 Repository, applied patch                     |                       |
-|              | License and credit correction                                              |                       |
-|              | Implemented single nucleotide copy errors with fixed, hardcoded error rate |                       |
-| **08/09/17** | Makefile: Differentiation between BASE and TARGET dirs                     | Patch for MDAsim 1.2  |
-| **08/08/17** | Makefile: Use prefix in installation                                       | Patch for MDAsim 1.2  |
-| **07/19/17** | Bug fix: Include `getopt.h` in `mdasim.h` (for argument parsing)           | Patch for MDAsim 1.2  |
-|              | Removed absolute openmpi paths, use any present openmpi                    | Patch for MDAsim 1.2  |
-|              | Compile using openmp (mpic++) and pthread                                  | Patch for MDAsim 1.2  |
+# Usage
 
-### References
+Once installed, you can get the full command line usage message with:
+```
+mdasim --help
+```
 
-[1] Taghavi, Z. and Draghici, S. (2012). MDAsim: a multiple displacement amplification simulator. In IEEE Conference on Bioinformatics and Biomedicine, pages 575–578.
+For an initial quick test run, you can use the provided example files (please note: the `=` between command line arguments and their respective values are required):
+```
+cd examples
+mdasim --input=Staphylococcus_aureus_USA300_FPR3757.fa --primers=primersList.fasta --coverage=4 --output=test_mdasim_out_prefix_ >test_mdasim.log
+```
+
+# Citation
+
+MDAsim 2 extends the original MDAsim 1.2. Whenever you use MDAsim 2, please cite both versions:
+* MDAsim 1.2 citation: [Taghavi, Z. and Draghici, S. (2012). MDAsim: a multiple displacement amplification simulator. In IEEE Conference on Bioinformatics and Biomedicine, pages 575–578.](https://doi.org/10.1109/BIBM.2012.6392622).
+* MDAsim 2 citation: Until there is a publication to cite, please cite the link to the tagged version that you use (e.g.: <https://github.com/hzi-bifo/mdasim/releases/v2.0.0>) or the exact bioconda version of the package that you use.
+
