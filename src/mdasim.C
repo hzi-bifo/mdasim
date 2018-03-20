@@ -76,23 +76,23 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
 #define MAXFILECHAR	2000
 
 Option OPTIONS[] = {
-        Option('l', (char *)"log", NEEDS_ARG, (char *)"file name for a log file of all single nucleotide errors that happen during amplification"), //#2.0
-        Option('m', (char *)"mutationrate", NEEDS_ARG, (char *)"=chance of a nucleotide substitution"),       //#2.0
-	Option('V', (char *)"version", NO_ARG, (char *)"prints the version"),
-	Option('h', (char *)"help", NO_ARG, (char *)"shows this help"),
-	Option('v', (char *)"verbose", NO_ARG, (char *)"extended verbose for debug mode"),
-	Option('I', (char *)"input", NEEDS_ARG, (char *)"=file name of reference DNA sequence (default: reference.fasta)"),
-	Option('O', (char *)"output", NEEDS_ARG, (char *)"=output files prefix (default: out)"),
+        Option('l', (char *)"log", NEEDS_ARG, (char *)"          = file name for a log file of all single nucleotide errors that happen during amplification"), //#2.0
+        Option('m', (char *)"mutationrate", NEEDS_ARG, (char *)" = chance of a nucleotide substitution"),       //#2.0
+	Option('V', (char *)"version", NO_ARG, (char *)"        prints the version"),
+	Option('h', (char *)"help", NO_ARG, (char *)"           shows this help"),
+	Option('v', (char *)"verbose", NO_ARG, (char *)"        extended verbose for debug mode"),
+	Option('I', (char *)"input", NEEDS_ARG, (char *)"        = file name of reference DNA sequence (default: reference.fasta)"),
+	Option('O', (char *)"output", NEEDS_ARG, (char *)"       = output files prefix , `Amplicons.fasta` will be appended to the prefix (default: out)"),
 	Option('o', (char *)"outputfragments", NO_ARG, (char *)"writes the lists of fragments and primer positions at the end of simulation in two txt files suffixed by Fragments.txt and PrimerPositions.txt"),
-	Option('P', (char *)"primers", NEEDS_ARG, (char *)"=file name of input primers in fasta format (default: primerList.fasta)"),
-	Option('p', (char *)"primerNo", NEEDS_ARG, (char *)"=average number of initial available primers (default: input reference length * coverage / frgLngth * 1000)"),
-	Option('L', (char *)"frgLngth", NEEDS_ARG, (char *)"=average number of synthesized bases per phi29 (default: 70,000 nt; synthesized bases per phi29 has uniform distribution; variance = frgLngth^2 / 1200)"),
-	Option('C', (char *)"coverage", NEEDS_ARG, (char *)"=expected average coverage (default: 1000)"),
-	Option('s', (char *)"stepSize", NEEDS_ARG, (char *)"=number of synthesized bases per phi29 in each step (default: 10000)"),
-	Option('A', (char *)"alpha", NEEDS_ARG, (char *)"=normalized number of primers attached in each step (default: 0.5e-11)"),
-	Option('a', (char *)"attachNum", NEEDS_ARG, (char *)"=number of primers attached per single strand of reference sequence in the first step. It can be any positive number. (overrides -A; alpha = attachNum / (input reference length * primerNo))"),
-	Option('R', (char *)"readLength", NEEDS_ARG, (char *)"=minimum length of output amplicons (default: 10)"),
-	Option('S', (char *)"single", NO_ARG, (char *)"Input reference is amplified as a single strand sequence"),
+	Option('P', (char *)"primers", NEEDS_ARG, (char *)"      = file name of input primers in fasta format (default: primerList.fasta)"),
+	Option('p', (char *)"primerNo", NEEDS_ARG, (char *)"     = average number of initial available primers (default: input reference length * coverage / frgLngth * 1000)"),
+	Option('L', (char *)"frgLngth", NEEDS_ARG, (char *)"     = average number of synthesized bases per phi29 (default: 70,000 nt; synthesized bases per phi29 has uniform distribution; variance = frgLngth^2 / 1200)"),
+	Option('C', (char *)"coverage", NEEDS_ARG, (char *)"     = expected average coverage (default: 1000)"),
+	Option('s', (char *)"stepSize", NEEDS_ARG, (char *)"     = number of synthesized bases per phi29 in each step (default: 10000)"),
+	Option('A', (char *)"alpha", NEEDS_ARG, (char *)"        = normalized number of primers attached in each step (default: 0.5e-11)"),
+	Option('a', (char *)"attachNum", NEEDS_ARG, (char *)"    = number of primers attached per single strand of reference sequence in the first step. It can be any positive number. (overrides -A; alpha = attachNum / (input reference length * primerNo))"),
+	Option('R', (char *)"readLength", NEEDS_ARG, (char *)"   = minimum length of output amplicons (default: 10)"),
+	Option('S', (char *)"single", NO_ARG, (char *)"         Input reference is amplified as a single strand sequence"),
 	//Option('f', (char *)"fragmentasInput", NO_ARG, (char *)"if the input is a fragment list"),
 	Option(0, NULL, 0, NULL)
 };
@@ -949,9 +949,12 @@ int main(int argc, char *argv[])
 		}
       		else if (count == 'h')
 		{
-			printf("Usage: ");
+			printf("\nUsage: ");
 			printf(FILE_STRING);
-			printf(" [options]\n");
+			printf(" [optional args] --input=<input.fa> --output=<mda-amplified_fasta_prefix> --primers=<primers.fasta>\n");
+			printf("\nNote: The above used arguments have defaults, but it is recommended to explicitly set them.\n");
+			printf("Note: Arguments that require a value are marked with an '=' sign below. This needs to be used \n");
+                        printf("      between the argument and the value on the command line.\n");
 			printf("%s\n", opts.help());
 			exitMsg(NULL, NO_ERROR);
 		}
