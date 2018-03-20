@@ -9,12 +9,13 @@ LIBTOOL = ar
 
 PACKAGENAME = mdasim
 
+prefix ?= .
 TARGET = $(prefix)
 
-OBJDIR = $(TARGET)/obj
 BINDIR = $(TARGET)/bin
 
 BASE = .
+OBJDIR = $(BASE)/obj
 SRCDIR = $(BASE)/src
 INCLUDEDIR = $(BASE)/include
 
