@@ -89,6 +89,12 @@ The format of the log file for single nucleotide substitution errors is tab sepa
 
 For consistent reference back to the original input sequence, both `ref` and `sub` will be reported as if incorporated into the input sequence's strand. I.e., if the substitution happens in the complementary strand, both nucleotides will be complemented before logging.
 
+## caveats
+
+### `Floating point exception` on small inputs
+
+Smaller sizes of input fasta sequences combined with a low target coverage can give a `Floating point exception`. In the `example` run provided above, setting `--coverage=10` chowcases this. While we assume numerical issues, we have resisted the urge of [being nerd-sniped](https://www.xkcd.com/356/) in this particular case. But if you want to investigate, please contribute to the [issue we use to track this](https://github.com/hzi-bifo/mdasim/issues/10).
+
 # Citation
 
 MDAsim 2 extends the original MDAsim 1.2. Whenever you use MDAsim 2, please cite both versions:
