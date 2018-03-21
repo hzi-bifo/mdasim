@@ -1,7 +1,5 @@
-CPP = mpic++
-
-MPICPPFLAGS = -pthread -lmpi_cxx -lmpi -lopen-rte -lopen-pal -ldl -lnsl -lutil -lm -ldl -Wl,--export-dynamic
-CPPFLAGS = -m64 -openmp -pthread -O3 -DMAXK=$(MAXK) -DFIXEDPOINTPROB=1 $(MPICPPFLAGS)
+CPP = g++
+CPPFLAGS = -m64 -fopenmp -O3
 
 PACKAGENAME = mdasim
 
@@ -25,7 +23,7 @@ $(BINDIR):
 	mkdir -p $(BINDIR)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.C | $(OBJDIR)
-	$(CPP) $(CPPFLAGS) -I $(INCLUDEDIR) -c $< -o $@
+	$(CPP) $(CPPFLAGS) -I$(INCLUDEDIR) -c $< -o $@
 
 $(BINDIR)/%: $(OBJDIR)/%.o | $(BINDIR)
 	$(CPP) $(CPPFLAGS) $< -o $@
