@@ -55,7 +55,7 @@ mdasim --help
 For an initial quick test run, you can use the provided example files (please note: the `=` between command line arguments and their respective values are required):
 ```
 cd examples
-mdasim --input=Staphylococcus_aureus_USA300_FPR3757.fa --primers=primerList.fasta --coverage=4 --output=test_mdasim_out_prefix_ >test_mdasim.log
+mdasim --input=example_input.fa --primers=primerList.fasta --coverage=15 --output=example_mdasim_out_prefix_ >example_mdasim.log
 ```
 ## RAM requirements
 
