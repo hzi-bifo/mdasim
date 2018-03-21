@@ -70,7 +70,7 @@ rule summary:
     output:
         "{outfolder}/summary.txt"
     shell:
-        "python3 summary.py --input={input} --output={output}"
+        "python3 scripts/summary.py --input={input} --output={output}"
 
 rule map2log:
     """
@@ -82,7 +82,7 @@ rule map2log:
     output:
         "{outfolder}/comparison.txt"
     shell:
-        "python3 mapToLog.py "
+        "python3 scripts/mapToLog.py "
         "--summary={input} "
         "--log=" + logfile + " "
         "--output={output}"
