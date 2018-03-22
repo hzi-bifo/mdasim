@@ -1,37 +1,6 @@
 /*
-Copyright 2018- Victoria Sack (victoria.sack@helmholtz-hzi.de)
-
-    This file is part of MDAsim 2,0.
-
-    MDAsim is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3 of the License, or
-    (at your option) any later version.
-
-    MDAsim is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with MDAsim; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-
-/***************************************************************************
- * Title:          mdasim.C
- * Author:         Victoria Sack
- * Created:        2018
- * Last modified:  01/10/2018
- *
- * Copyright (c) 2018- Victoria Sack
- * All Rights Reserved
- * See file LICENSE for details.
- * Altered Code is marked with #2.0
- ***************************************************************************/
-
-/*
 Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
+Copyright 2018- Victoria Sack (victoria.sack@helmholtz-hzi.de) and David Lähnemann (david.laehnemann@helmholtz-hzi.de)
 
     This file is part of MDAsim.
 
@@ -55,10 +24,14 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
  * Author:         Zeinab Taghavi
  * Created:        2012
  * Last modified:  5/27/2014
+ * Author:         Victoria Sack
+ * Last modified:  see https://github.com/hzi-bifo/mdasim
  *
  * Copyright (c) 2012- Zeinab Taghavi
+ * Copyright (c) 2018- Victoria Sack
  * All Rights Reserved
  * See file LICENSE for details.
+ * Major code changes from 1.2 to 2.0 are marked with #2.0
  ***************************************************************************/
 // -a can be non-integer and any positive number
 //add save and load fragment instead of fragmentasInput
@@ -72,7 +45,7 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
 #include "sequence.C"
 
 #define FILE_STRING (char *)"mdasim"
-#define FILE_VERSION (char *)"mdasim 2.0"
+#define FILE_VERSION (char *)"mdasim 2.0.1"
 #define MAXFILECHAR	2000
 
 Option OPTIONS[] = {
