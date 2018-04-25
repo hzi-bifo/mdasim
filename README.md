@@ -58,6 +58,8 @@ cd examples
 mdasim --input=example_input.fa --primers=primerList.fasta --coverage=15 \
        --output=example_mdasim_out_prefix_ --log=example_mdasim_errors.log >example_mdasim_run.log
 ```
+Note that the file provided under `--input` must contain exactly one sequence, since MDAsim does not process input files with more than one sequence.
+
 ## RAM requirements
 
 The required memory is linearly proportional to the size of the input genome and to the final coverage requested. E.g., for the S. aureus sample for which the size of the genome is in the order of 3M, to get 50x average coverage 6G RAM is needed. So please note that for a genome of size 3G to get average coverage of 50x, approximately 6T of RAM is needed. One suggestion to reduce the required memory size for large genomes is to break the genome to smaller pieces (may be with some overlaps), then apply MDAsim on each piece separately. 
