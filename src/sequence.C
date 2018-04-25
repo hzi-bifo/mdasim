@@ -107,50 +107,50 @@ int Sequence::input(FILE* file)
   state = 0;
   last = '\n';
 
-  while ((current = fgetc(file)) != EOF)
+  while ((current = fgetc(file)) != EOF)        //while the current char is not EOF
     {
-      if (last == '\n' && current == '>')
+      if (last == '\n' && current == '>')       //if last char read is \n and current is > (*)
 	{
-	  if (usedSeq)
+          if (usedSeq)                          //if usedSeq != 0
 	    {
-	      ungetc('>', file);
-	      break;
+	      ungetc('>', file);                //ungets the read char >
+              break;                            //break here, because a '>' in the middle of the file has been read that does not start a sequence name!!
 	    }
 	  else
-	    state = 1;
+            state = 1;                          //if not usedSeq, set state to 1, which means,  we're reading a sequence NAME atm
 	}
-      else if (current == '\n')
-	state = 0;
-      else if (state == 0)
+      else if (current == '\n')                 //if the current char is a newline \n
+        state = 0;                              //set the state to 0, because we don't know what we'll get next
+      else if (state == 0)                      //if the state is IN_SEQUENCE and we did not read the start of a sequence name in (*)
 	{
-	  if (('a' <= current && current <= 'z') || ('A' <= current && current <= 'Z') || ('0' <= current && current <= '9') || current == '&')
-	    string[usedSeq++] = toupper(current);
-	  else if (current == ';')
-	    break;
+          if (('a' <= current && current <= 'z') || ('A' <= current && current <= 'Z') || ('0' <= current && current <= '9') || current == '&') //if current char is out of a-zA-Z0-9&
+            string[usedSeq++] = toupper(current);       //increase usedSeq++, the string at usedSeq is the CAPITAL char of current char
+          else if (current == ';')                      //else if current is a ;
+            break;                                      //break, something went wrong!
 	}
-      else if (state == 1)
-	name[usedName++] = current;
+      else if (state == 1)                      //if the state is 1, which means we're IN_HEADER
+        name[usedName++] = current;             //the name at usedName++ is the current char
 
-      checkArray(&name, &availableName, usedName, 80);
-      checkArray(&string, &availableSeq, usedSeq, 1024);
-      last = current;
-    }
-  name[usedName] = 0;
-  string[usedSeq] = 0;
+      checkArray(&name, &availableName, usedName, 80);      //reallocate memory for name if the array is full
+      checkArray(&string, &availableSeq, usedSeq, 1024);    //reallocate memory for sequence if the array is full
+      last = current;                           //set the last read char last to the current one
+    }                                           //repeat till end of file is reached
+  name[usedName] = 0;                 //set name after usedName to 0
+  string[usedSeq] = 0;                //same with the sequence
   
-  if (strlen(name) == 0)
+  if (strlen(name) == 0)            //if the name length is 0
     {
-      free(name);
-      name = NULL;
+      free(name);                   //free the memory
+      name = NULL;                  //set name to NULL
     }
   else
-    name = (char *)alloc.xrealloc(name, strlen(name) + 1);
+    name = (char *)alloc.xrealloc(name, strlen(name) + 1);  //else, allocate exactly as much memory as you need for the name
 
-  if (strlen(string) == 0)
+  if (strlen(string) == 0)          //do the same stuff for the sequence!
     {
       free(string);
       string = NULL;
-      return -1;
+      return -1;                    //however, if there is no sequence, the file is faulty
     }
   else
     string = (char *)alloc.xrealloc(string, strlen(string) + 1);

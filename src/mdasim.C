@@ -220,18 +220,40 @@ void loadOriginalSequence(string inputFileName)
 {
 	FILE * dnaFile = NULL;
 	dnaFile = open_file(inputFileName.c_str(), "rt");
-	Sequence *originalDNAseq = new Sequence(dnaFile);
-	if (originalDNAseq->isLoaded())
-	{
-		char *DNAseq =  originalDNAseq->getString();
-		for (dnaLength = 0 ; DNAseq[dnaLength] !=0; dnaLength++)
-			originalDNA.push_back(Base(DNAseq[dnaLength]));
-	}
-	else
-	{
-		exitMsg((char *)"Error: Input sequence cannot be loaded.", INPUT_ARG_ERROR);
-	}
-	delete originalDNAseq;
+        //**********************************************************************
+        //#2.0
+        //bug fix: 1.2 does not load more than one sequence. Since it's better to
+        //let the user know that only the first sequence will be amplified, feeding
+        //mdasim 2.0+ an input file with more than one sequence will lead to an error
+        //
+        bool moreseq = true;
+        bool seqLoaded = false;
+        while(moreseq) {
+            Sequence *originalDNAseq = new Sequence(dnaFile);
+            if (originalDNAseq->isLoaded())                                     //if a sequence can be loaded from the file
+            {
+                if(!seqLoaded)                                                  //and if there has not been a sequence loaded yet
+                {
+                    seqLoaded = true;                                           //read and store that sequence
+                    char *DNAseq =  originalDNAseq->getString();
+                    for (dnaLength = 0 ; DNAseq[dnaLength] !=0; dnaLength++)
+                            originalDNA.push_back(Base(DNAseq[dnaLength]));
+                } else {                                                        //else, if there was already a sequence, exit with an error!
+                    exitMsg((char *)"Error: MDAsim cannot process more than one input sequence.", INPUT_ARG_ERROR);
+                }
+            }
+            else                                                                //meanwhile, if no sequence could be loaded
+            {
+                    if(!seqLoaded)                                              //and if there hasn't been a sequence yet
+                        exitMsg((char *)"Error: Input sequence cannot be loaded.", INPUT_ARG_ERROR);    //exit with error
+                    else
+                        moreseq = false;                                        //otherwise, exit loop
+
+            }
+            delete originalDNAseq;
+        }
+        //**************************************************************************
+
 	if(dnaFile)
 		close_file(dnaFile);
 }
