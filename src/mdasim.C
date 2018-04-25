@@ -995,6 +995,7 @@ int main(int argc, char *argv[])
         // #2.0
         if(printLog) {
             errorLog = fopen(errorLogFileName, "w");
+            fprintf(errorLog, "#Generating software: %s\n#Position count starts at: 1\n", FILE_VERSION);
             fprintf(errorLog, "#pos\tref\tsub\n");
             fclose(errorLog);
         }
