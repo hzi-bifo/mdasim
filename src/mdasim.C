@@ -995,6 +995,10 @@ int main(int argc, char *argv[])
         // #2.0
         if(printLog) {
             errorLog = fopen(errorLogFileName, "w");
+            if(errorLog == NULL) {
+                string msg ("Error: Failed to open logfile. Please make sure all folders in the path exist.");
+                exitMsg((char *) msg.c_str(), INPUT_ARG_ERROR);
+            }
             fprintf(errorLog, "#Generating software: %s\n",FILE_VERSION);
             fprintf(errorLog, "#Input sequence file: %s\n", inputFileName.c_str());
             fprintf(errorLog, "#Position count starts at: 1\n");
@@ -1005,10 +1009,22 @@ int main(int argc, char *argv[])
 
 	outputFragmentsFile = outputName;
 	outputReadsName = outputName;
-	outputFragmentsFile += "Fragments.txt";
+        outputFragmentsFile += "Fragments.txt";
 	outputReadsName += "Amplicons.fasta";
 	outputPrimerPositionsFile = outputName;
 	outputPrimerPositionsFile += "PrimerPositions.txt";
+
+        //*******************************************************************
+        // check if output file can be opened BEFORE costly amplification process starts!
+        // #2.0
+        FILE * outputCheck = fopen(outputReadsName.c_str(), "w");
+        if(outputCheck == NULL) {
+            string msg ("Error: Failed to open output file. Please make sure all folders in the path exist.");
+            exitMsg((char *) msg.c_str(), INPUT_ARG_ERROR);
+        } else {
+            fclose(outputCheck);
+        }
+        //*******************************************************************
 
 	string executedcommand;
 	for(int i = 0; i < argc; i++)
