@@ -995,7 +995,9 @@ int main(int argc, char *argv[])
         // #2.0
         if(printLog) {
             errorLog = fopen(errorLogFileName, "w");
-            fprintf(errorLog, "#Generating software: %s\n#Position count starts at: 1\n", FILE_VERSION);
+            fprintf(errorLog, "#Generating software: %s\n",FILE_VERSION);
+            fprintf(errorLog, "#Input sequence file: %s\n", inputFileName.c_str());
+            fprintf(errorLog, "#Position count starts at: 1\n");
             fprintf(errorLog, "#pos\tref\tsub\n");
             fclose(errorLog);
         }
