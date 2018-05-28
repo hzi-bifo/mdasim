@@ -862,6 +862,7 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
 	readFile = open_file(filename.c_str(), "wt");
 	(averageReadLength) = 0;
 	(readNumber) = 0;
+        Coord refPos = 0;
 	Coverage singleStrandCounterAtTheEnd = 0;
 	for (FragmentID fragIndex = 0; fragIndex < fragmentList.size(); fragIndex++)
 	{
@@ -884,8 +885,15 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
 			{
 				readsList.push_back(readTemp);
 				readNumber ++;
+                                refPos = fragmentList[fragIndex].dna[posIndex].occupancy.original - readTemp.size();  //#2.0
+                                char strand = '+'; //#2.0
+                                if(refPos < 0)     //#2.0
+                                {
+                                    refPos = dnaLength + refPos; //#2.0
+                                    strand = '-';                //#2.0
+                                }
 				averageReadLength = averageReadLength + readTemp.size();
-				fprintf(readFile, ">%ld | name = R%ld | fragment = %ld | position = %ld \n", readTemp.size(), readNumber, fragIndex, posIndex);
+                                fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c \n", readNumber, readTemp.size(), fragIndex, posIndex, refPos, strand); //#2.0
 				fprintfSeq(readFile,"%c",readTemp);
 				fprintf(readFile, "\n");
 			}
@@ -907,9 +915,16 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
 				readsList.push_back(readTemp2);
 				cout.flush();
 				readNumber ++;
+                                refPos = fragmentList[fragIndex].dna[posIndex].occupancy.original - readTemp2.size();  //#2.0
+                                char strand = '+'; //#2.0
+                                if(refPos < 0)     //#2.0
+                                {
+                                    refPos = dnaLength + refPos; //#2.0
+                                    strand = '-';                //#2.0
+                                }
 				averageReadLength = averageReadLength + readTemp2.size();
-				fprintf(readFile, ">%ld | name = R%ld | fragment = %ld | position = %ld \n", readTemp2.size(), readNumber, fragIndex, posIndex);
-				fprintfSeq(readFile,"%c",readTemp2);
+                                fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c \n", readNumber, readTemp2.size(), fragIndex, posIndex, refPos, strand); //#2.0
+                                fprintfSeq(readFile,"%c",readTemp2);
 				fprintf(readFile, "\n");
 			}
 		}
