@@ -526,7 +526,6 @@ void initializeFragmentList()
 		{
 			fbaseTemp.base = originalDNARC.at(i);
                         fbaseTemp.occupancy.original = (-1) * (originalDNARC.size()-i); //#2.0
-                        //fbaseTemp.occupancy.revStrand = 1; //#2.0
 			dnaTemp.dna.push_back(fbaseTemp);
 		};
 		fragmentList.push_back(dnaTemp);
@@ -636,11 +635,12 @@ pair<Primer, Position> findPrimerPositionInSet(Coverage randomPrimerPosition)
 void attachPhi29(int phi29AttachmentNumCurrent)
 {
 	Coverage primerIndex = 0;
-	while ((primerIndex < phi29AttachmentNumCurrent) && (freePrimerPositionTotal > 0))
+        while ((primerIndex < phi29AttachmentNumCurrent) && (freePrimerPositionTotal > 0))          //while there have to be more primers added and there are still free primers
 	{
-		Coverage randomPrimerPosition = rand() % freePrimerPositionTotal;
+                Coverage randomPrimerPosition = rand() % freePrimerPositionTotal;                   //select a random primer from the set
 		pair<Primer, Position> primerpositionpair;
 		primerpositionpair = findPrimerPositionInSet(randomPrimerPosition);
+
 		Position fragPos = primerpositionpair.second;
 		Primer primerAttached = primerpositionpair.first;
 		Coord primerLength = primerAttached.size();
@@ -649,15 +649,22 @@ void attachPhi29(int phi29AttachmentNumCurrent)
 			exitMsg((char *) "Error in attachPhi29. There is a primer position in the list which will generate a fragment of size 0 or less.", INTERNAL_WOW_ERROR);
 		else
 		{
-			bool fragmentOccupancy = false;
-			for ( Coord k =  fragPos.pos;  k >= fragPos.pos - primerLength + 1; k--)
+                        bool fragmentOccupancy = false;                                             //check if the fragment is occupied
+                        for ( Coord k =  fragPos.pos;  k >= fragPos.pos - primerLength + 1; k--)    //for the length of the primer, check if the fragment is occupied
 			{
-				fragmentOccupancy = fragmentOccupancy  || (fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(k).occupancy.fragmentNo1 != 0);
+                                fragmentOccupancy = fragmentOccupancy  ||
+                                        (fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(k).occupancy.fragmentNo1 != 0);
+                                // in the fragmentlist
+                                // check the fragment that this one came from (?)
+                                // and in the dna, get the base at position k = fragPos.pos
+                                // and check if the occupancy has anything other for the attached fragment than 0 (== nothing)
 			};
 			if (fragmentOccupancy == true) /* The primer position is in the list of free positions but it is not free in real */
 				exitMsg((char *) "Error in attachPhi29. The primer position is in the list of free positions but it is not free on the fragment.", INTERNAL_WOW_ERROR);
 			else /* the fragment is free at this position for this primer */
 			{
+                                Coord original = fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original; //#2.0
+
 				primerIndex ++;
 				FragmentID fragmentIndex = FragmentID(fragmentList.size());
 				Phi29 newPhi29;
@@ -679,10 +686,12 @@ void attachPhi29(int phi29AttachmentNumCurrent)
 					FragmentBase baseTemp;
 					baseTemp.base = primerAttached.at(k);
 					baseTemp.occupancy = fragPos;
+                                        baseTemp.occupancy.original = original; //#2.0
 					newFragment.dna.push_back(baseTemp);
 					fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.fragmentNo1 = -(fragmentIndex + 1);
-					fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.pos = k;
-					deleteFromPrimerAvailability(fragPos);
+                                        fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.pos = k;
+                                        //fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original = original; //#2.0
+                                        deleteFromPrimerAvailability(fragPos);
 					fragPos.pos --;
 				}
 				fragmentList.push_back(newFragment);
@@ -716,8 +725,6 @@ void OneStepAheadPhi29()
 			originalBase = fragmentList.at(positionOnOriginalFrag.fragmentNo1 - 1).dna.at(positionOnOriginalFrag.pos);
 			newBase.base = reverseComplement(originalBase.base);
                         newBase.occupancy.original = (-1) * originalBase.occupancy.original; //#2.0
-                        //newBase.occupancy.revStrand = originalBase.occupancy.revStrand; //#2.0
-
 
                         //*******************************************************************
                         // Single nucleodite errors are generated here for version 2.0
@@ -885,15 +892,39 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
 			{
 				readsList.push_back(readTemp);
 				readNumber ++;
-                                refPos = fragmentList[fragIndex].dna[posIndex].occupancy.original - readTemp.size();  //#2.0
-                                char strand = '+'; //#2.0
-                                if(refPos < 0)     //#2.0
-                                {
-                                    refPos = dnaLength + refPos; //#2.0
-                                    strand = '-';                //#2.0
+
+                                /****************** #2.0 */
+                                Coord original = fragmentList[fragIndex].dna[posIndex].occupancy.original;
+                                Coord prec = fragmentList[fragIndex].dna[posIndex-1].occupancy.original;
+                                if(original == 0) {
+                                    if(prec > 0) {
+                                        original = prec - 1;  //#2.0 hackey hack
+                                        cout << "+ " << prec << " -> " << original << endl;
+                                    } else if(prec < 0) {
+                                        original = prec + 1;  //#2.0 hackey hack
+                                        cout << "- " << prec << " -> " << original << endl;
+                                    } else {
+                                        cout << "There're still gaps" << endl;
+                                    }
                                 }
+
+                                if(original == 0) {
+                                    cout << "I failed" << endl;
+                                }
+
+                                char strand = '+'; //#2.0
+                                if(original > 0) {
+                                    refPos = original - readTemp.size();  //#2.0
+                                    if(refPos == 0) cout << "Upsi Daisy +" << endl;
+                                } else {
+                                    refPos = (-1)*original ; //#2.0
+                                    strand = '-';            //#2.0
+                                    if(refPos == 0) cout << "Upsi Daisy -" << endl;
+                                }
+                                /*******************/
+
 				averageReadLength = averageReadLength + readTemp.size();
-                                fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c \n", readNumber, readTemp.size(), fragIndex, posIndex, refPos, strand); //#2.0
+                                fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c | 1\n", readNumber, readTemp.size(), fragIndex, posIndex, refPos, strand); //#2.0
 				fprintfSeq(readFile,"%c",readTemp);
 				fprintf(readFile, "\n");
 			}
@@ -915,15 +946,38 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
 				readsList.push_back(readTemp2);
 				cout.flush();
 				readNumber ++;
-                                refPos = fragmentList[fragIndex].dna[posIndex].occupancy.original - readTemp2.size();  //#2.0
-                                char strand = '+'; //#2.0
-                                if(refPos < 0)     //#2.0
-                                {
-                                    refPos = dnaLength + refPos; //#2.0
-                                    strand = '-';                //#2.0
+                                /****************** #2.0 */
+                                Coord original = fragmentList[fragIndex].dna[posIndex].occupancy.original;
+                                Coord prec = fragmentList[fragIndex].dna[posIndex-1].occupancy.original;
+                                if(original == 0) {
+                                    if(prec > 0) {
+                                        original = prec - 1;  //#2.0 hackey hack
+                                        cout << "+ " << prec << " -> " << original << endl;
+                                    } else if(prec < 0) {
+                                        original = prec + 1;  //#2.0 hackey hack
+                                        cout << "- " << prec << " -> " << original << endl;
+                                    } else {
+                                        cout << "There're still gaps" << endl;
+                                    }
                                 }
+
+                                if(original == 0) {
+                                    cout << "I failed" << endl;
+                                }
+
+                                char strand = '+'; //#2.0
+                                if(original > 0) {
+                                    refPos = original - readTemp2.size();  //#2.0
+                                    if(refPos == 0) cout << "Upsi Daisy +" << endl;
+                                } else {
+                                    refPos = (-1)*original ; //#2.0
+                                    strand = '-';            //#2.0
+                                    if(refPos == 0) cout << "Upsi Daisy -" << endl;
+                                }
+                                /*******************/
+
 				averageReadLength = averageReadLength + readTemp2.size();
-                                fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c \n", readNumber, readTemp2.size(), fragIndex, posIndex, refPos, strand); //#2.0
+                                fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c | 2\n", readNumber, readTemp2.size(), fragIndex, posIndex, refPos, strand); //#2.0
                                 fprintfSeq(readFile,"%c",readTemp2);
 				fprintf(readFile, "\n");
 			}
