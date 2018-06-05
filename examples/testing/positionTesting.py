@@ -39,21 +39,40 @@ def complementStrand(seq):
         i += 1
     return "".join(strand)
 
+def match(am_seq, ref_seq, start):
+    fails = 0
+    i = 0
+    failed = False
+    preceeding_errors = 0;
+    while i < len(am_seq) and i+start < len(ref_seq):
+        if(ref_seq[i+start] != am_seq[i]):
+            preceeding_errors += 1
+            fails += 1
+            if fails > len(am_seq)*0.01 or preceeding_errors > 10:
+                return False
+        else:
+            preceeding_errors = 0
+        i += 1
+    return True;
+
 #try to align an amplicon sequence with the reference sequence and return all matching positions
 def align(am_seq, ref_seq, method):
     start = 0
     foundMatches = []
     while True:                                                                 # keep searching as long as we don't have a match
-        i = 0
-        errors = 0
+        #i = 0
+        #errors = 0
         if(start + len(am_seq) > len(ref_seq)):                                 # if the start plus the length of the amplicon would exceed the length of the ref seq
             return foundMatches                                                 # we failed
-        while i < len(am_seq) and i+start < len(ref_seq) and errors < 10:       # while the search indicees are in bound and we don't exceed the error tolerance (due to mutations)
-            if(seq[i+start] != am_seq[i]):                                      # if the bases don't match, it's an error
-                errors += 1
-            i += 1                                                              # check next bases
-        if errors < 10:                                                          # if we have less than 3 errors for this, it's a successful match
+        matches = match(am_seq, ref_seq, start)
+        if matches:
             foundMatches.append({'pos':start,'src':method})
+        #while i < len(am_seq) and i+start < len(ref_seq) and errors < 10:       # while the search indicees are in bound and we don't exceed the error tolerance (due to mutations)
+        #    if(seq[i+start] != am_seq[i]):                                      # if the bases don't match, it's an error
+        #        errors += 1
+        #    i += 1                                                              # check next bases
+        #if errors < 10:                                                          # if we have less than 3 errors for this, it's a successful match
+        #    foundMatches.append({'pos':start,'src':method})
         start += 1                                                              # else, check the next position as a potential starting position
     return foundMatches
 
@@ -118,53 +137,54 @@ boundsMinus = 0
 boundsPlus = 0
 success = []
 fail = []
+init_succ = 0
+correct_succ1 = 0
+correct_succ2 = 0
+correct_succ3 = 0
+
 
 # try to align the amplicons with the reference sequence at the position that
 # was noted in the header
+hits = [0]*5
 for amplicon in amplicons:                           # for every amplicon in the list
     am_seq = amplicon['seq']
-    if amplicon['strand'] == '+':
-        start = amplicon['refstart']-1               # read the start position relative to the ref sequence
-    else:
-        start = amplicon['refstart']
-        am_seq = reverseStrand(complementStrand(am_seq))
-
-    if start < 0:                                   # if the position is smaller than 0 it's probably the reverse strand (this shouldn't happen anymore)
-        print("OUT OF BOUNDS: " + str("R" + str(amplicon['id'])) + " starts at " + str(start))
-        fail.append(amplicon)
-    elif start > len(seq):                          # if the start is behind the length of the ref seq, something's wrong
-        print("OUT OF BOUNDS: " + str("R" + str(amplicon['id'])) + " starts at " + str(start))
-        fail.append(amplicon)
-    elif start+len(am_seq)-1 > len(seq):            # if the end of the amplicon would be behind that of ref, something's also wrong
-        print("OUT OF BOUNDS: " + str("R" + str(amplicon['id'])) + " ends at " + str(i+start+len(am_seq)-1))
-        fail.append(amplicon)
 
     # if there's not out of bounds error, we try to align it
-    else:
+    if True:
         fails = 0
+        #start_orig = start;
+        corrections = [(-1, False), (0, True), (1, False), (((-1)*len(am_seq))+1, False), ((len(am_seq)), True)]
+        matches = False
         i = 0
-        while i < len(am_seq) and i+start < len(seq):
-            if(seq[i+start] != am_seq[i]):
-                fails += 1
+        while not matches and i < len(corrections):
+            #tmp_seq = amplicon['seq']
+            tmp_seq = am_seq
+            if(corrections[i][1]):
+                tmp_seq = reverseStrand(complementStrand(tmp_seq))
+            start = amplicon['refstart'] + corrections[i][0]
+            matches = match(tmp_seq, seq, start)
             i += 1
-        if fails > 10:
-            fail.append(amplicon)
-        else:
+
+        i -= 1
+        if matches:
+            hits[i] = hits[i] + 1
             success.append(amplicon)
+        else:
+            fail.append(amplicon)
     total += 1
 
-print("> SUCCESSFUL MATCHES (1st Try, position correct): " + str(len(success)) + " out of " + str(len(amplicons)))
+i = 0
+print("\nSUCCESS:")
+print(hits)
+
+print(len(success))
+print("")
+
 
 # try to align the amplicons with faulty reference positions brute force
 found_fails = 0
 for f in fail:
     foundMatches = findRealPosition(f['seq'], seq, f['refstart'], f['id'])
     found_fails += len(foundMatches)
-
-print("------RESULTS-----")
-
-print("> SUCCESSFUL MATCHES (1st Try, position correct): " + str(len(success)) + " out of " + str(len(amplicons)))
-
-print("> SUCCESSFUL MATCHES (2nd Try, position incorrect but alignment possible): " + str(found_fails) + " of " + str(len(amplicons)))
 
 print("> FAILS (no alignment possible): " + str(len(fail)-found_fails) + " of " + str(len(amplicons)))
