@@ -124,7 +124,7 @@ while i < len(lines):
     ref_start_pos = int(header[8])
     strand = header[10]
     seq = lines[i+1]
-    amplicons.append({'id':name_id, 'orig':original_fragment, 'refstart':ref_start_pos, 'last':last_pos, 'seq':seq, 'strand':strand})
+    amplicons.append({'id':name_id, 'orig':original_fragment, 'refstart':ref_start_pos, 'last':last_pos, 'seq':seq, 'strand':strand, 'offset':0})
     i+=2
 
 # get reference sequence
@@ -146,14 +146,13 @@ correct_succ3 = 0
 # try to align the amplicons with the reference sequence at the position that
 # was noted in the header
 hits = [0]*5
+
 for amplicon in amplicons:                           # for every amplicon in the list
     am_seq = amplicon['seq']
-
-    # if there's not out of bounds error, we try to align it
+    corrections = [(-1, False), (0, True), (1, False), (((-1)*len(am_seq))+1, False), ((len(am_seq)), True)]
     if True:
         fails = 0
         #start_orig = start;
-        corrections = [(-1, False), (0, True), (1, False), (((-1)*len(am_seq))+1, False), ((len(am_seq)), True)]
         matches = False
         i = 0
         while not matches and i < len(corrections):
@@ -168,6 +167,8 @@ for amplicon in amplicons:                           # for every amplicon in the
         i -= 1
         if matches:
             hits[i] = hits[i] + 1
+            amplicon['offset']=i
+            #amplicon['rc']=corrections[i][1]
             success.append(amplicon)
         else:
             fail.append(amplicon)
@@ -176,6 +177,27 @@ for amplicon in amplicons:                           # for every amplicon in the
 i = 0
 print("\nSUCCESS:")
 print(hits)
+
+# analyse distribution of offsets over features like pos/neg strand, last on fragment etc.
+success.sort(key=lambda x: (x['id']), reverse=False);
+
+lastOnFragment_P = [0]*5
+lastOnFragment_N = [0]*5
+initiallyCorrect = 0
+for amplicon in amplicons:
+
+    successor = next((x for x in amplicons if x['id'] == amplicon['id']+1), None)
+    if successor is None or successor['orig'] == amplicon['orig']+1:
+        if(amplicon['strand'] == '+'):
+            lastOnFragment_P[amplicon['offset']] += 1
+        else:
+            lastOnFragment_N[amplicon['offset']] += 1
+    elif amplicon['offset'] == 1:
+        initiallyCorrect += 1
+
+print("Initially correct reverseStrand:" + str(initiallyCorrect))
+print(lastOnFragment_P)
+print(lastOnFragment_N)
 
 print(len(success))
 print("")
