@@ -20,7 +20,7 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 
 
 /***************************************************************************
- * Title:          sequence.h 
+ * Title:          sequence.h
  * Author:         Hamidreza Chitsaz
  * Created:        2011
  * Last modified:  12/27/2011
@@ -40,29 +40,28 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 
 class Sequence {
 private:
-	Alloc alloc; 
-	char *name;
-	char *string;
-	bool loaded;
-	int readSequence(FILE *);
-	void checkArray(char** array, unsigned int* available, unsigned int used, unsigned int increment);
+  Alloc alloc;
+  char *name;
+  char *string;
+  bool loaded;
+  int readSequence(FILE *);
+  void checkArray(char** array, unsigned int* available, unsigned int used, unsigned int increment);
 
 public:
-	Sequence(char *fn);
-	Sequence(FILE*);
-	~Sequence();
-	int load(FILE *f);
-	int input(FILE* file);
-	bool isLoaded() {return loaded;};
-	char *getName();
-	void setName(const char *);
-	char *getString();
-	unsigned int getLen();
-	void print(FILE *);
-	void print(std::ostream &out);
-	void subsequence(size_t pos, size_t n);
-	void printSequence(std::ostream &out);
-	int countNs();
+  Sequence(char *fn);
+  Sequence(FILE*);
+  ~Sequence();
+  int load(FILE *file);
+  bool isLoaded() {return loaded;};
+  char *getName();
+  void setName(const char *);
+  char *getString();
+  unsigned int getLen();
+  void print(FILE *);
+  void print(std::ostream &out);
+  void subsequence(size_t pos, size_t n);
+  void printSequence(std::ostream &out);
+  int countNs();
 };
 
 #endif
