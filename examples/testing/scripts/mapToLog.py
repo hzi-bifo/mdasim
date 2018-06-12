@@ -93,7 +93,7 @@ allSNPs_log = [];
 for line in log:
     #print(line);
     contents = line.split();
-    if(contents[0] != '#pos'):
+    if( not contents[0].startswith('#') ):
         ref = contents[1];
         alt = contents[2];
         allSNPs_log.append({'position':int(contents[0]), 'ref':ref, 'alt':alt});
