@@ -100,12 +100,22 @@ bool doubleStranded = true;
 FILE *errorLog;
 bool printLog = false;
 
-int fprintfSeq(FILE * filename, const char * format, DNAType seq)
+/**
+ * @brief fprintfSeq prints a DNAType to a file base by base
+ * @param filename file to write to
+ * @param format for example "%c" for chars (=bases)
+ * @param seq DNAType to print to file
+ */
+void fprintfSeq(FILE * filename, const char * format, DNAType seq)
 {
 	for (Coord i = 0; i < seq.size(); i ++)
 		fprintf (filename, format, seq.at(i));
 }
 
+/**
+ * @brief writeSeq print DNAType to std-output base by base
+ * @param seq DNAType to print
+ */
 void writeSeq(DNAType seq)
 {
 	for (Coord i = 0; i < seq.size(); i ++)
@@ -266,16 +276,24 @@ void loadOriginalSequence(string inputFileName)
 		close_file(dnaFile);
 }
 
+/**
+ * @brief loadPrimers reads a file of primers, parses them and pushes them into the primerList
+ * @param inputPrimerFileName   fasta-file containing primer sequences
+ */
 void loadPrimers(string inputPrimerFileName)
 {
+    // open the primer file
 	FILE * primerFile = NULL;
 	primerFile = open_file(inputPrimerFileName.c_str(), "rt");
+    // step through the primers
 	bool moreseq = true;
 	while (moreseq)
 	{
+        // for each primer, create a Sequence object
 		Sequence *primerseq = new Sequence(primerFile);
 		if (primerseq->isLoaded())
 		{
+            // if the primer could be loaded, parse the primer to the primerList
 			char *primerseqString =  primerseq->getString();
 			DNAType primerTemp;
 			for (int i = 0 ; primerseqString[i] !=0; i++)
@@ -283,41 +301,54 @@ void loadPrimers(string inputPrimerFileName)
 			primerList.push_back(primerTemp);
 		}
 		else
+            // if no more primer could be loaded, exit the while-loop
 			moreseq = false;
 		delete primerseq;
 	}
+
 	if (primerList.size() == 0)
 		exitMsg((char *)"Error: Input primer list cannot be loaded.", INPUT_ARG_ERROR);
 	if(primerFile)
 		close_file(primerFile);
 }
 
+/**
+ * @brief addToPrimerPositionSets checks whether a position is valid as a primer position
+ * (not occupied, index great enough to put a primer in front of it on the respective fragment)
+ * finds the primer that fits to it and stores the pair in freePrimerPositionSets
+ * @param pos   Position to check if suitable as a Primer position
+ */
 void addToPrimerPositionSets(Position pos)
 {
-	Coord primerLength = primerList.at(0).size(); //assuming that all primers have equal lengths
+    // get the length of the primers, assuming that all primers have equal lengths
+    Coord primerLength = primerList.at(0).size();
+    // if the position is not behind the end of the primer, return, since
+    // the primer should produce a fragment of size at least primerLength + 1
+    if (pos.pos < primerLength)
+        return;
+
 	bool occupied = false;
 	Primer primerTemp;
-	if (pos.pos < primerLength) // the primer should produce a fragment of size at least primerLength + 1
-		return;
-	for (Coord pindex = pos.pos; (pindex >= pos.pos - primerLength + 1) && (pindex >= 0) ; pindex--)
+
+    // starting from the position going backwards as long as the index lies within the potential primer ending at pos
+    // and while the index is not negative
+    for (Coord posIndex = pos.pos; (posIndex >= pos.pos - primerLength + 1) && (posIndex >= 0) ; posIndex--)
 	{
-		primerTemp.push_back(reverseComplement(fragmentList.at(pos.fragmentNo1 - 1).dna.at(pindex).base));
-		occupied = occupied || (fragmentList.at(pos.fragmentNo1 - 1).dna.at(pindex).occupancy.fragmentNo1 != 0);
+        // append the reverse complement of the base at the passed position to the primer
+        primerTemp.push_back(reverseComplement(fragmentList.at(pos.fragmentNo1 - 1).dna.at(posIndex).base));
+        // check if the position is occupied
+        occupied = occupied || (fragmentList.at(pos.fragmentNo1 - 1).dna.at(posIndex).occupancy.fragmentNo1 != 0);
 	};
+
+    //if all positions were free
 	if (!occupied)
 	{
-		FreePrimerPositionSets::iterator it = freePrimerPositionSets.find(primerTemp);
-		if (it == freePrimerPositionSets.end())
+        // find the primer fitting at this position
+        FreePrimerPositionSets::iterator it = freePrimerPositionSets.find(primerTemp);
+        if (it != freePrimerPositionSets.end())
 		{
-		//	writeSeq(primerTemp);
-		//	cout << " can not be found in freePrimerPositionList." << endl;
-		//	exitMsg((char *)"Error: primer can not be found in freePrimerPositionSets in the function addToPrimerPositionSets.", INTERNAL_WOW_ERROR);
-		}
-		else
-		{
-		//	writeSeq(primerTemp);
-		//	cout << " is found in primerPositionList." << endl;
-			pair<PositionSet::iterator, bool> ret;
+            // add the position to the primer found in the list
+            pair<PositionSet::iterator, bool> ret;
 			ret = it->second.set.insert(pos);
 			if (ret.second == false)
 				exitMsg((char *)"Error: primer position duplication in the function addToPrimerPositionSets.", INTERNAL_WOW_ERROR);
@@ -333,10 +364,10 @@ void deleteFromPrimerPositionSets(Position pos)
 	Coord primerLength = primerList.at(0).size(); //assuming that all primers have equal lengths
 	bool occupied = false;
 	Primer primerTemp;
-	for (Coord pindex = pos.pos; (pindex >= pos.pos - primerLength + 1) && (pindex >= 0) ; pindex--)
+    for (Coord posIndex = pos.pos; (posIndex >= pos.pos - primerLength + 1) && (posIndex >= 0) ; posIndex--)
 	{
-		primerTemp.push_back(reverseComplement(fragmentList.at(pos.fragmentNo1 - 1).dna.at(pindex).base));
-		occupied = occupied || (fragmentList.at(pos.fragmentNo1 - 1).dna.at(pindex).occupancy.fragmentNo1 != 0);
+        primerTemp.push_back(reverseComplement(fragmentList.at(pos.fragmentNo1 - 1).dna.at(posIndex).base));
+        occupied = occupied || (fragmentList.at(pos.fragmentNo1 - 1).dna.at(posIndex).occupancy.fragmentNo1 != 0);
 	}
 	if (occupied)
 	{
@@ -361,37 +392,57 @@ void deleteFromPrimerPositionSets(Position pos)
 }
 
 
-
-void initializePrimerPosition() // now it is assumed that the length of all primers are equal
+/**
+ * @brief initializePrimerPosition creates a FreePrimerPosition for each primer, that means,
+ * pair a Primer with a Position on a Fragment and add the pair to the freePrimerPositionSets
+ */
+void initializePrimerPosition()
 {
-	Coord AveCountPerPrimer = primerList.size();
-	AveCountPerPrimer = avePrimerNum / AveCountPerPrimer;
+    Coord averageCountPerPrimer = avePrimerNum / primerList.size();
 	Coord primerLength = primerList.at(0).size(); //it is assumed that the length of all primers are equal
 	if (avePrimerNum % primerList.size() != 0)
-		AveCountPerPrimer ++;
+        averageCountPerPrimer ++;
 	cout << "\nPrimers length = " << primerLength << endl << "Number of primers = " << (int) primerList.size() << endl << endl;
+
+    // step through all primers
 	for (int i = 0; i < primerList.size(); i++)
 	{
+        // for each primer, create a FreePrimerPosition
 		FreePrimerPosition primerPositionTemp;
-		primerPositionTemp.currentNo = AveCountPerPrimer + (rand() % ( AveCountPerPrimer /10)) - AveCountPerPrimer /20;
+        // calculate the coverage for the primer by using the average count +/- a random factor
+        primerPositionTemp.currentNo = averageCountPerPrimer + (rand() % ( averageCountPerPrimer /10)) - averageCountPerPrimer /20;
+        // add the coverage of the current primer to the total value
 		primerCurrentNoTotal = primerCurrentNoTotal + primerPositionTemp.currentNo;
+        // add the FreePrimerPosition and the current primer as a PrimerPositionPair to the free primer position sets
 		pair<FreePrimerPositionSets::iterator, bool> ret;
 		ret = freePrimerPositionSets.insert(PrimerPositionPair(primerList.at(i), primerPositionTemp));
+        // if the pair could not be inserted into the list, an error occured (duplicate primers)
 		if (ret.second == false)
 			exitMsg((char *)" error in initializing primer position list. There are dublicate primers in the input primer list.", INTERNAL_WOW_ERROR);
 	}
-	for (FragmentID fn = 0; fn < fragmentList.size(); fn++)
+
+    // for all fragments in the fragmentList
+    for (FragmentID fragIndex = 0; fragIndex < fragmentList.size(); fragIndex++)
 	{
-		for (Coord fc = primerLength - 1 ; fc < fragmentList.at(fn).dna.size(); fc++)
+        //step through the positions on the DNA from end of primer to the end of the dna
+        for (Coord fragCoord = primerLength - 1 ; fragCoord < fragmentList.at(fragIndex).dna.size(); fragCoord++)
 		{
+            // create a position
 			Position pos;
-			pos.fragmentNo1 = fn + 1;
-			pos.pos = fc;
+            // set the fragment number according to the fragment index in the list
+            pos.fragmentNo1 = fragIndex + 1;
+            // set the position on the fragment
+            pos.pos = fragCoord;
+            // check if the position works as a primer position and if so, add it
 			addToPrimerPositionSets(pos);
 		}
 	}
 }
 
+/**
+ * @brief savePrimerPositionSets TODO
+ * @param Filename
+ */
 void savePrimerPositionSets(string Filename) // add error message
 {
 	FILE * primerPosFile = NULL;
@@ -417,7 +468,10 @@ void savePrimerPositionSets(string Filename) // add error message
 		close_file(primerPosFile);
 }
 
-
+/**
+ * @brief writePrimerPositionSets
+ * @deprecated unused
+ */
 void writePrimerPositionSets() // add error message
 {
 	Coverage counter = 0;
@@ -438,6 +492,9 @@ void writePrimerPositionSets() // add error message
 	};
 }
 
+/**
+ * @deprecated Unused
+ */
 void writephi29List()
 {
 	FragmentID phicounter = 0;
@@ -448,7 +505,11 @@ void writephi29List()
 	}
 }
 
-
+/**
+ * @brief loadFragmentList
+ * @param inputFilename
+ * @deprecated unused
+ */
 void loadFragmentList(string inputFilename)
 {
 	FILE * fragmentFile = NULL;
@@ -476,6 +537,9 @@ void saveFragmentList(string Filename) // add error message
 		close_file(fragmentFile);
 }
 
+/**
+ * @deprecated unused
+ */
 void writeFragmentList() // add error message
 {
 	for (FragmentID k = 0; k < fragmentList.size(); k++)
@@ -489,7 +553,9 @@ void writeFragmentList() // add error message
 	};
 }
 
-
+/**
+ * @deprecated unused
+ */
 void writeDNA()
 {
 	cout << "Length of loaded DNA sequence: " << dnaLength << endl;
@@ -498,6 +564,9 @@ void writeDNA()
 	cout << endl;
 }
 
+/**
+ * @deprecated unused
+ */
 void writePrimers()
 {
 	cout << "Number of primers: " << primerList.size() << endl;
@@ -639,68 +708,92 @@ pair<Primer, Position> findPrimerPositionInSet(Coverage randomPrimerPosition)
 	}
 }
 
-
+/**
+ * @brief attachPhi29 TODO
+ * @param phi29AttachmentNumCurrent
+ */
 void attachPhi29(int phi29AttachmentNumCurrent)
 {
+    // primers that have been attached so far
 	Coverage primerIndex = 0;
-        while ((primerIndex < phi29AttachmentNumCurrent) && (freePrimerPositionTotal > 0))          //while there have to be more primers added and there are still free primers
+    //while there have to be more primers added and there are still free primers ...
+    while ((primerIndex < phi29AttachmentNumCurrent) && (freePrimerPositionTotal > 0))
 	{
-                Coverage randomPrimerPosition = rand() % freePrimerPositionTotal;                   //select a random primer from the set
+        //select a random primer from the set
+        Coverage randomPrimerPosition = rand() % freePrimerPositionTotal;
 		pair<Primer, Position> primerpositionpair;
 		primerpositionpair = findPrimerPositionInSet(randomPrimerPosition);
-
 		Position fragPos = primerpositionpair.second;
 		Primer primerAttached = primerpositionpair.first;
 		Coord primerLength = primerAttached.size();
-		/* length of Fragment should be larger than a primer */
+
+        //check if the primer can be attached here (this should not happen since it's checked at initialization of the primerPositionPairs
 		if (fragPos.pos < primerLength)
 			exitMsg((char *) "Error in attachPhi29. There is a primer position in the list which will generate a fragment of size 0 or less.", INTERNAL_WOW_ERROR);
 		else
 		{
-                        bool fragmentOccupancy = false;                                             //check if the fragment is occupied
-                        for ( Coord k =  fragPos.pos;  k >= fragPos.pos - primerLength + 1; k--)    //for the length of the primer, check if the fragment is occupied
+            //check if the fragment is occupied:
+            bool fragmentOccupancy = false;
+            //for the length of the primer, check if the fragment is occupied by doing the following:
+            for ( Coord k =  fragPos.pos;  k >= fragPos.pos - primerLength + 1; k--)
 			{
-                                fragmentOccupancy = fragmentOccupancy  ||
-                                        (fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(k).occupancy.fragmentNo1 != 0);
-                                // in the fragmentlist
-                                // check the fragment that this one came from (?)
-                                // and in the dna, get the base at position k = fragPos.pos
-                                // and check if the occupancy has anything other for the attached fragment than 0 (== nothing)
+                // in the fragmentlist, check the fragment that this one came from (?)
+                // in the dna of that fragment, get the base at position k  <= fragPos.pos
+                // and check if the occupancy has anything other for the attached fragment than 0 (== nothing)
+                fragmentOccupancy = fragmentOccupancy  || (fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(k).occupancy.fragmentNo1 != 0);
 			};
-			if (fragmentOccupancy == true) /* The primer position is in the list of free positions but it is not free in real */
+            // if the fragment is occupied, the primer position is in the list of free positions but it is not free in real, so exit with an error
+            if (fragmentOccupancy == true)
 				exitMsg((char *) "Error in attachPhi29. The primer position is in the list of free positions but it is not free on the fragment.", INTERNAL_WOW_ERROR);
-			else /* the fragment is free at this position for this primer */
+            else
 			{
-                                Coord original = fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original; //#2.0
+                // the fragment is free at this position for this primer
+
+                // get the position relative to the reference sequence, #2.0
+                Coord original = fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original;
 
 				primerIndex ++;
+
+                // get the fragment index of end of list
 				FragmentID fragmentIndex = FragmentID(fragmentList.size());
+                // create a new copying process struct
 				Phi29 newPhi29;
+                // new fragmentIndex
 				newPhi29.fragmentNo1 = fragmentIndex + 1;
+                // set a (random) expected length for this fragment
 				if ((frgAveLength / 10) == 0)
 					newPhi29.expectedLength = frgAveLength;
 				else
 					newPhi29.expectedLength = frgAveLength + (frgAveLength / 20) - (rand() % (frgAveLength / 10));
- 					Coord currentCoord = fragPos.pos - primerLength + 1;
-				/*length of the new fragment can not be more than remaining part of the copied fragment */
+                // get the current coordinates of the copying process
+                Coord currentCoord = fragPos.pos - primerLength + 1;
+                // length of the new fragment can not be more than remaining part of the copied fragment
 				if (newPhi29.expectedLength > currentCoord)
 					newPhi29.expectedLength = currentCoord;
+                // set same position parameters for fragment and copying process
 				newPhi29.currentPosition.fragmentNo1 = fragPos.fragmentNo1;
 				newPhi29.currentPosition.pos = currentCoord;
+
+                // add copying process to list
 				phi29List.push_back(newPhi29);
+
+                // create a new fragment
 				Fragment newFragment;
+                // for the length of the primer
 				for (Coord k = 0 ; k < primerLength ; k ++)
 				{
+                    // create a base
 					FragmentBase baseTemp;
+                    // ... TODO to be continued
 					baseTemp.base = primerAttached.at(k);
 					baseTemp.occupancy = fragPos;
-                                        baseTemp.occupancy.original = original; //#2.0
+                    baseTemp.occupancy.original = original; //#2.0
 					newFragment.dna.push_back(baseTemp);
 					fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.fragmentNo1 = -(fragmentIndex + 1);
-                                        fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.pos = k;
-                                        //fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original = original; //#2.0
-                                        deleteFromPrimerAvailability(fragPos);
-					fragPos.pos --;
+                    fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.pos = k;
+                    //fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original = original; //#2.0
+                    deleteFromPrimerAvailability(fragPos);
+                    fragPos.pos --;
 				}
 				fragmentList.push_back(newFragment);
 				singleStrandCoverage = singleStrandCoverage - primerLength;
@@ -817,12 +910,20 @@ void OneStepAheadPhi29()
 	}
 }
 
-
-void sequenceFragments(string outputFragmentsFile, string outputPrimerPositionsFile)
+/**
+ * @brief sequenceFragments TODO
+ * @param outputFragmentsFile
+ */
+void sequenceFragments(string outputFragmentsFile)
 {
+    // coverage from previous round
 	Coverage oldCoverage = 0;
+    // checks if coverage is changeing at all, if not, the loop will terminate eventually
 	Coverage coverageNotChangingCounter = 0;
+    // counts while-loops
 	Coverage counter = 0;
+
+    // while the desired coverage has not been reached yet and it is still increasing ...
 	while ((wholeCoverage < dnaLength * aveCoverage) && (coverageNotChangingCounter < 100))
 	{
 		counter ++;
@@ -830,6 +931,7 @@ void sequenceFragments(string outputFragmentsFile, string outputPrimerPositionsF
 		Coverage phi29AttachmentNumCurrent = Coverage(phi29AttachmentNum * singleStrandCoverage / dnaLength * primerCurrentNoTotal / avePrimerNum);
 		if (phi29AttachmentNumCurrent < 1)
 			phi29AttachmentNumCurrent = 1;
+
 		attachPhi29(phi29AttachmentNumCurrent);
 
 
@@ -998,11 +1100,29 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
 		close_file(readFile);
 }
 
+/**
+ * @brief printErrorLogHeader opens the error log file and prints header info
+ */
+void printErrorLogHeader(string inputFileName)
+{
+    errorLog = fopen(errorLogFileName, "w");
+    if(errorLog == NULL)
+    {
+        string msg ("Error: Failed to open logfile. Please make sure all folders in the path exist.");
+        exitMsg((char *) msg.c_str(), INPUT_ARG_ERROR);
+    }
+    fprintf(errorLog, "#Generating software: %s\n",FILE_VERSION);
+    fprintf(errorLog, "#Input sequence file: %s\n", inputFileName.c_str());
+    fprintf(errorLog, "#Position count starts at: 1\n");
+    fprintf(errorLog, "#pos\tref\tsub\n");
+    fclose(errorLog);
+}
+
 int main(int argc, char *argv[])
 {
 	GetOpt opts(argc, argv, OPTIONS);
 
-	int files = 0;
+        // default file names
 	string outputName ("out");
 	string inputFileName ("reference.fasta");
 	string inputPrimerFileName ("primerList.fasta");
@@ -1010,40 +1130,46 @@ int main(int argc, char *argv[])
 	string outputReadsName ("outAmplicons.fasta");
 	string outputPrimerPositionsFile ("outPrimerPositions.txt");
 
+        // read and set options
 	while (opts.hasNext())
 	{
 		Option *current = opts.next();
 		char count = current->getShortForm();
-      		if (count == 'V')
-		{
+        if (count == 'V')
+        {
+            // print software version and exit
 			version(FILE_VERSION);
 			exit(EXIT_SUCCESS);
 		}
-      		else if (count == 'h')
+        else if (count == 'h')
 		{
+            // print help and exit
 			printf("\nUsage: ");
 			printf(FILE_STRING);
 			printf(" [optional args] --input=<input.fa> --output=<mda-amplified_fasta_prefix> --primers=<primers.fasta>\n");
 			printf("\nNote: The above used arguments have defaults, but it is recommended to explicitly set them.\n");
 			printf("Note: Arguments that require a value are marked with an '=' sign below. This needs to be used \n");
-                        printf("      between the argument and the value on the command line.\n");
+            printf("      between the argument and the value on the command line.\n");
 			printf("%s\n", opts.help());
 			exitMsg(NULL, NO_ERROR);
 		}
-                else if (count == 'l') {                                     //#2.0
-                        errorLogFileName = current->getArg();
-                        printLog = true;
-                }
+        else if (count == 'l')
+        {
+            // set log file name
+            //#2.0
+            errorLogFileName = current->getArg();
+            printLog = true;
+        }
 		else if (count =='v')
 			verbose = true;
-		else if (count == 'f')
-			FragmentasInput = true;
+        /*else if (count == 'f')
+            FragmentasInput = true;         //old code: this is not in Options anymore!!*/
 		else if (count == 'I')
 			inputFileName = current->getArg();
-                else if (count == 'O')
-                        outputName = current->getArg();
-                else if (count == 'm')                                        //#2.0
-                        mutationRate = strtod(current->getArg(), NULL);
+        else if (count == 'O')
+            outputName = current->getArg();
+        else if (count == 'm')
+            mutationRate = strtod(current->getArg(), NULL);          //#2.0
 		else if (count == 'o')
 			Writefragmentasoutput = true;
 		else if (count == 'P')
@@ -1067,42 +1193,33 @@ int main(int argc, char *argv[])
 
 	}
 
-        //*******************************************************************
-        // error log file for version 2.0
-        // #2.0
-        if(printLog) {
-            errorLog = fopen(errorLogFileName, "w");
-            if(errorLog == NULL) {
-                string msg ("Error: Failed to open logfile. Please make sure all folders in the path exist.");
-                exitMsg((char *) msg.c_str(), INPUT_ARG_ERROR);
-            }
-            fprintf(errorLog, "#Generating software: %s\n",FILE_VERSION);
-            fprintf(errorLog, "#Input sequence file: %s\n", inputFileName.c_str());
-            fprintf(errorLog, "#Position count starts at: 1\n");
-            fprintf(errorLog, "#pos\tref\tsub\n");
-            fclose(errorLog);
-        }
-        //*******************************************************************
+    // error log file for version 2.0, print header #2.0
+    if(printLog)
+    {
+        printErrorLogHeader(inputFileName);
+    }
 
+    // set output filenames
 	outputFragmentsFile = outputName;
 	outputReadsName = outputName;
-        outputFragmentsFile += "Fragments.txt";
+    outputFragmentsFile += "Fragments.txt";
 	outputReadsName += "Amplicons.fasta";
 	outputPrimerPositionsFile = outputName;
 	outputPrimerPositionsFile += "PrimerPositions.txt";
 
-        //*******************************************************************
-        // check if output file can be opened BEFORE costly amplification process starts!
-        // #2.0
-        FILE * outputCheck = fopen(outputReadsName.c_str(), "w");
-        if(outputCheck == NULL) {
-            string msg ("Error: Failed to open output file. Please make sure all folders in the path exist.");
-            exitMsg((char *) msg.c_str(), INPUT_ARG_ERROR);
-        } else {
-            fclose(outputCheck);
-        }
-        //*******************************************************************
+    // check if output file can be opened BEFORE costly amplification process starts! #2.0
+    FILE * outputCheck = fopen(outputReadsName.c_str(), "w");
+    if(outputCheck == NULL)
+    {
+        string msg ("Error: Failed to open output file. Please make sure all folders in the path exist.");
+        exitMsg((char *) msg.c_str(), INPUT_ARG_ERROR);
+    }
+    else
+    {
+        fclose(outputCheck);
+    }
 
+    // print input arguments (why though?) and software version
 	string executedcommand;
 	for(int i = 0; i < argc; i++)
 	{
@@ -1111,12 +1228,14 @@ int main(int argc, char *argv[])
 	}
 	executedcommand += "\n \n";
 
-	time_t now;
-	time(&now);
+    time_t now;
+    time(&now);
 
 	version(FILE_VERSION);
 	cout << "**************************************"<< endl;
 	cout << executedcommand;
+
+    // print file name and amplification execution infos
 	cout << "Output amplicons file name = " << outputReadsName << endl;
 	if (Writefragmentasoutput)
 	{
@@ -1130,8 +1249,9 @@ int main(int argc, char *argv[])
 	cout << endl;
 	cout.flush();
 
-	if (!FragmentasInput) // DNA sequence as input
-	{
+    // load reference sequence
+    /*if (!FragmentasInput) // DNA sequence as input
+    {*/
 		cout << "**************************************" << endl;
 		cout << "Loading reference DNA sequence ..." << endl;
 		if(inputFileName != "")
@@ -1142,20 +1262,26 @@ int main(int argc, char *argv[])
 			saveFragmentList(outputFragmentsFile);
 		cout << "DNA sequence loaded." << endl;
 
-	}
-	else
+    /*}
+    else
 	{
+        //this is old code, since this is not in Options anymore!
 		cout << "**************************************"<< endl;
 		cout << "Loading fragments ..." << endl;
 		if(inputFileName != "")
 			loadFragmentList(inputFileName);
 		cout << "Fragments loaded." << endl;
-	};
-	if (avePrimerNum == 0) // put it after reading the input dna
-	{
+    };*/
+
+    // set average primer number based on dna length, coverage and fragment length
+    // CoverageToPrimerConst = 1000 defined in header
+    if (avePrimerNum == 0)
+    {
 		avePrimerNum = dnaLength * aveCoverage / frgAveLength * CoverageToPrimerConst;
 		cout << "Average initial primer counts (primerNo) = " << avePrimerNum << endl;
 	}
+
+    // check if number of primers attached per single strand of reference sequence in the first step is valid and set it
 	if (phi29AttachmentNum != 0)
 	{
 		if (phi29AttachmentNum < 0)
@@ -1164,6 +1290,8 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
+        // if the number of primers attached in first step is zero, check normalized number of primers attached in each step
+        // and calculate number of primers in first step accordingly
 		if (alpha < 0)
 			exitMsg((char *)"Error: \"alpha\" should be a positive number.", INTERNAL_WOW_ERROR);
 		phi29AttachmentNum = (int) (alpha * dnaLength * avePrimerNum);
@@ -1171,20 +1299,29 @@ int main(int argc, char *argv[])
 
 	cout << "\nNormalized number of primers attached in each step (alpha) = " << alpha << endl << "Number of primers attached in the first step (attachNum) = " << phi29AttachmentNum << endl << "attachNum = alpha * input DNA length * primerNo\n\n";
 
+    // load primers
 	cout << "\nLoading primers ..." << endl;
 	if (inputPrimerFileName !="")
 		loadPrimers(inputPrimerFileName);
 	cout << "Primer list loaded." << endl;
+
+    // for all primers, check where they can go on the fragments
 	initializePrimerPosition();
+
+    // if needed write an output file about where the primers have been positioned
 	if (Writefragmentasoutput)
 		savePrimerPositionSets(outputPrimerPositionsFile);
+
 	cout << "**************************************"<< endl;
 	cout << "Amplification started ..." << endl;
 	cout << "**************************************"<< endl;
+
+    // for debugging
 	if (verbose)
 		cout << " RAND_MAX = " << RAND_MAX << endl;
+
 	srand(time(NULL));
-	sequenceFragments(outputFragmentsFile, outputPrimerPositionsFile);
+    sequenceFragments(outputFragmentsFile);
 	if (Writefragmentasoutput)
 		savePrimerPositionSets(outputPrimerPositionsFile);
 	double averageReadLength;
