@@ -1313,8 +1313,7 @@ int main(int argc, char *argv[])
 	FragmentID readNumber;
 	cout << "\nCleavage started ..." << endl;
 	cout << "Writing amplicons in " << outputReadsName << endl;
-	cleaveFragments(outputReadsName, averageReadLength, readNumber);
-    writeFragmentList();
+    cleaveFragments(outputReadsName, averageReadLength, readNumber);
 	cout << "\nCleavage finished." << endl;
 	cout << "**************************************"<< endl;
 	cout << "Amplification finished." << endl;
