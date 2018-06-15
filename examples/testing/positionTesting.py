@@ -149,7 +149,7 @@ hits = [0]*5
 
 for amplicon in amplicons:                           # for every amplicon in the list
     am_seq = amplicon['seq']
-    corrections = [(-1, False), (0, True), (1, False), (((-1)*len(am_seq))+1, False), ((len(am_seq)), True)]
+    corrections = [(0, False), (0, True), (1, False), (((-1)*len(am_seq))+1, False), ((len(am_seq)), True)]
     if True:
         fails = 0
         #start_orig = start;
@@ -175,29 +175,25 @@ for amplicon in amplicons:                           # for every amplicon in the
     total += 1
 
 i = 0
-print("\nSUCCESS:")
-print(hits)
+print(str(corrections))
+
+print("SUCCESSFUL matches per correction: " + str(hits))
 
 # analyse distribution of offsets over features like pos/neg strand, last on fragment etc.
 success.sort(key=lambda x: (x['id']), reverse=False);
 
-lastOnFragment_P = [0]*5
-lastOnFragment_N = [0]*5
+onPosStrand = [0]*5
+onNegStrand = [0]*5
 initiallyCorrect = 0
 for amplicon in amplicons:
+    #successor = next((x for x in amplicons if x['id'] == amplicon['id']+1), None)
+    if(amplicon['strand'] == '+'):
+        onPosStrand[amplicon['offset']] += 1
+    else:
+        onNegStrand[amplicon['offset']] += 1
 
-    successor = next((x for x in amplicons if x['id'] == amplicon['id']+1), None)
-    if successor is None or successor['orig'] == amplicon['orig']+1:
-        if(amplicon['strand'] == '+'):
-            lastOnFragment_P[amplicon['offset']] += 1
-        else:
-            lastOnFragment_N[amplicon['offset']] += 1
-    elif amplicon['offset'] == 1:
-        initiallyCorrect += 1
-
-print("Initially correct reverseStrand:" + str(initiallyCorrect))
-print(lastOnFragment_P)
-print(lastOnFragment_N)
+print("on + strand " + str(onPosStrand))
+print("on - strand " + str(onNegStrand))
 
 print(len(success))
 print("")

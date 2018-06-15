@@ -90,7 +90,7 @@ FreePrimerPositionSets freePrimerPositionSets;
 ReadsList readsList;
 Coverage singleStrandCoverage;
 Coverage wholeCoverage;
-Phi29List phi29List;
+Phi29List phi29List;    //list of copying processes
 Coverage freePrimerPositionTotal = 0;
 Coverage primerCurrentNoTotal = 0;
 bool doubleStranded = true;
@@ -228,7 +228,12 @@ inline DNAType reverseComplementSeq(DNAType seq)
 	return seqRC;
 }
 
-
+/**
+ * TODO check if this can be just replaced at the neccessary spots instead of using a method for it
+ * @brief close_file
+ * @param stream
+ * @return
+ */
 int close_file( FILE * stream)
 {
 	return (fclose(stream));
@@ -367,39 +372,39 @@ void addToPrimerPositionSets(Position pos)
 	}
 }
 
-
+/**
+ * @brief deleteFromPrimerPositionSets
+ * @param pos   Position for which to find the primer to be removed from set of free primers
+ */
 void deleteFromPrimerPositionSets(Position pos)
 {
-	Coord primerLength = primerList.at(0).size(); //assuming that all primers have equal lengths
+    //assuming that all primers have equal lengths
+    Coord primerLength = primerList.at(0).size();
 	bool occupied = false;
 	Primer primerTemp;
+    // for the length of the primer at the passed position ...
     for (Coord posIndex = pos.pos; (posIndex >= pos.pos - primerLength + 1) && (posIndex >= 0) ; posIndex--)
 	{
+        // construct a temporary primer according to the given position and check if the fragment is occupied at that position
         primerTemp.push_back(reverseComplement(fragmentList.at(pos.fragmentNo1 - 1).dna.at(posIndex).base));
         occupied = occupied || (fragmentList.at(pos.fragmentNo1 - 1).dna.at(posIndex).occupancy.fragmentNo1 != 0);
 	}
 	if (occupied)
 	{
+        // if the position is occupied, find the newly constructed primer in the set of free primers
 		FreePrimerPositionSets::iterator it = freePrimerPositionSets.find(primerTemp);
-		if (it == freePrimerPositionSets.end())
+        if (it != freePrimerPositionSets.end())
 		{
-		//	writeSeq(primerTemp);
-		//	cout << " can not be found in freePrimerPositionList." << endl;
-		//	exitMsg((char *)"Error: primer can not be found in freePrimerPositionSets in the function deleteFromPrimerPositionSets.", INTERNAL_WOW_ERROR);
-		}
-		else
-		{
-		//	writeSeq(primerTemp);
-		//	cout << " is found in primerPositionList." << endl;
-			size_t erasecount;
+            // if the primer could be found in the set of free primers, erase the primer from that set
+            size_t erasecount;
 			erasecount = it->second.set.erase(pos);
 			freePrimerPositionTotal = freePrimerPositionTotal - erasecount;
 			if (erasecount > 1)
+                // Debug output
 				cout << "erasecount = " << erasecount << endl;
 		}
 	}
 }
-
 
 /**
  * @brief initializePrimerPosition creates a FreePrimerPosition for each primer, that means,
@@ -541,7 +546,8 @@ void writeFragmentList() // add error message
 		cout << ">" << k <<endl;
 		for (int i = 0; i < fragmentList.at(k).dna.size(); i++)
 		{
-			cout << "(" << i << ": " <<fragmentList.at(k).dna.at(i).base << ", " << fragmentList.at(k).dna.at(i).occupancy.fragmentNo1 <<", " << fragmentList.at(k).dna.at(i).occupancy.pos <<"), ";
+            if(i <= 8 || i >= fragmentList.at(k).dna.size() - 8)
+                cout << "(" << i << ": " <<fragmentList.at(k).dna.at(i).base << ", " << fragmentList.at(k).dna.at(i).occupancy.fragmentNo1 <<", " << fragmentList.at(k).dna.at(i).occupancy.pos << ", " << fragmentList.at(k).dna.at(i).occupancy.original << "), ";
 		};
 		cout <<endl;
 	};
@@ -635,6 +641,10 @@ void addToPrimerAvailability(Position pos)
 	}
 }
 
+/**
+ * @brief deleteFromPrimerAvailability removes a primer from the set of free primers
+ * @param pos Position of the primer on a fragment
+ */
 void deleteFromPrimerAvailability(Position pos)
 {
 	Coord primerLength = primerList.at(0).size(); /* assuming length of all of the primers are equal */
@@ -645,10 +655,13 @@ void deleteFromPrimerAvailability(Position pos)
 		posBegin = fragmentList.at(pos.fragmentNo1 - 1).dna.size() - 1;
 	if (posEnd < 0)
 		posEnd = 0;
+    // from the end of the primer to its beginning (the termination clause here is double I think, see definition of posEnd) TODO check
 	for (Coord i = posBegin; (i >= pos.pos) && ( i >= posEnd + primerLength - 1); i --)
 	{
+        //create a new position relative to the passed one
 		Position newpos = pos;
 		newpos.pos = i;
+        // delete position from set
 		deleteFromPrimerPositionSets(newpos);
 	}
 }
@@ -702,8 +715,8 @@ pair<Primer, Position> findPrimerPositionInSet(Coverage randomPrimerPosition)
 }
 
 /**
- * @brief attachPhi29 TODO
- * @param phi29AttachmentNumCurrent
+ * @brief attachPhi29 attaches primers to the existing fragments and creates a new fragment for each primer
+ * @param phi29AttachmentNumCurrent     number of primers to be attached
  */
 void attachPhi29(int phi29AttachmentNumCurrent)
 {
@@ -743,7 +756,7 @@ void attachPhi29(int phi29AttachmentNumCurrent)
                 // the fragment is free at this position for this primer
 
                 // get the position relative to the reference sequence, #2.0
-                Coord original = fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original;
+                Coord original = (-1) * fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original;
 
 				primerIndex ++;
 
@@ -777,18 +790,26 @@ void attachPhi29(int phi29AttachmentNumCurrent)
 				{
                     // create a base
 					FragmentBase baseTemp;
-                    // ... TODO to be continued
+                    // set the base according to the attached primer
 					baseTemp.base = primerAttached.at(k);
+                    // set the occupancy to the position on the fragment as stored by the primer
 					baseTemp.occupancy = fragPos;
-                    baseTemp.occupancy.original = original; //#2.0
+
+                    baseTemp.occupancy.original = original + k; //#2.0
+
+                    // add the new base to the new fragment
 					newFragment.dna.push_back(baseTemp);
+                    // set the fragment occupancy of the preceding (??) fragment to the new fragment index
 					fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.fragmentNo1 = -(fragmentIndex + 1);
+                    // set the position of the base on the preceeding fragment relative to the new fragment (???)
                     fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.pos = k;
-                    //fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original = original; //#2.0
+                    // delete the primer from the list of available primers
                     deleteFromPrimerAvailability(fragPos);
                     fragPos.pos --;
 				}
+                // add the new fragment to list of fragments
 				fragmentList.push_back(newFragment);
+                // update single strand coverage and whole coverage
 				singleStrandCoverage = singleStrandCoverage - primerLength;
 				wholeCoverage = wholeCoverage + primerLength;
 			}
@@ -799,66 +820,77 @@ void attachPhi29(int phi29AttachmentNumCurrent)
 /* a predicate for removing finished phi29 implemented as function */
 bool zeroExpectedLength (Phi29 &phi29Value) { return (phi29Value.expectedLength == 0); }
 
+/**
+ * @brief OneStepAheadPhi29 TODO
+ */
 void OneStepAheadPhi29()
 {
 	for (int k = 0; k < phi29StepSize; k++)
 	{
-		int phi29Counter = 0;
+        //this counter just counts the iterations but is never used elsewhere
+        int phi29Counter = 0;
+        //for all active copying processes ...
 		for (list<Phi29>::iterator it = phi29List.begin(); it != phi29List.end(); it++)
 		{
+            // create a position both for the new and the reference fragment
 			Position positionOnNewFrag, positionOnOriginalFrag;
+            // set occupancy of reference
 			positionOnOriginalFrag.fragmentNo1 = it->currentPosition.fragmentNo1;
-			positionOnOriginalFrag.pos = it->currentPosition.pos; //
+            // set position of reference but decrease by one
+            positionOnOriginalFrag.pos = it->currentPosition.pos;
 			positionOnOriginalFrag.pos--;
 			if (positionOnOriginalFrag.pos < 0)
 				exitMsg((char *)"Error: error in OneStepAheadPhi29. positionOnOriginalFrag.pos is negative.", INTERNAL_WOW_ERROR);
+            // set occupancy of new fragment
 			positionOnNewFrag.fragmentNo1 = it->fragmentNo1;
+            // set position to end of the fragment
 			positionOnNewFrag.pos = fragmentList.at(it->fragmentNo1 - 1).dna.size();
+            // create a reference base and a new base
 			FragmentBase newBase, originalBase;
 			originalBase = fragmentList.at(positionOnOriginalFrag.fragmentNo1 - 1).dna.at(positionOnOriginalFrag.pos);
 			newBase.base = reverseComplement(originalBase.base);
-                        newBase.occupancy.original = (-1) * originalBase.occupancy.original; //#2.0
 
-                        //*******************************************************************
-                        // Single nucleodite errors are generated here for version 2.0
-                        // #2.0
+            //*******************************************************************
+            // Single nucleodite errors are generated here for version 2.0
+            // #2.0
+            newBase.occupancy.original = (-1) * originalBase.occupancy.original; //#2.0
 
-                        double r = (double)rand()/(double)(RAND_MAX);
-                        if(r <= mutationRate)
-                        {
-                            if(printLog) {
-                                errorLog = fopen(errorLogFileName, "a+");
+            double r = (double)rand()/(double)(RAND_MAX);
+            if(r <= mutationRate)
+            {
+                if(printLog) {
+                    errorLog = fopen(errorLogFileName, "a+");
 
-                                if(newBase.occupancy.original > 0)
-                                {
-                                    fprintf(errorLog, "%ld\t", ((long int) newBase.occupancy.original));
-                                    fprintf(errorLog, "%c\t", newBase.base);
-                                }
-                                else
-                                {
-                                    fprintf(errorLog, "%ld\t", ((long int) ((-1)*newBase.occupancy.original)));
-                                    fprintf(errorLog, "%c\t", reverseComplement(newBase.base));
-                                }
+                    if(newBase.occupancy.original > 0)
+                    {
+                        fprintf(errorLog, "%ld\t", ((long int) newBase.occupancy.original));
+                        fprintf(errorLog, "%c\t", newBase.base);
+                    }
+                    else
+                    {
+                        fprintf(errorLog, "%ld\t", ((long int) ((-1)*newBase.occupancy.original)));
+                        fprintf(errorLog, "%c\t", reverseComplement(newBase.base));
+                    }
 
-                                newBase.base = mutateBase(newBase.base);
+                    newBase.base = mutateBase(newBase.base);
 
-                                if(newBase.occupancy.original > 0)
-                                {
-                                    fprintf(errorLog, "%c\n", newBase.base);
-                                }
-                                else
-                                {
-                                    fprintf(errorLog, "%c\n", reverseComplement(newBase.base));
-                                }
+                    if(newBase.occupancy.original > 0)
+                    {
+                        fprintf(errorLog, "%c\n", newBase.base);
+                    }
+                    else
+                    {
+                        fprintf(errorLog, "%c\n", reverseComplement(newBase.base));
+                    }
 
-                                fclose(errorLog);
-                            } else {
-                                newBase.base = mutateBase(newBase.base);
-                            }
+                    fclose(errorLog);
+                } else {
+                    newBase.base = mutateBase(newBase.base);
+                }
 
-                        }
+            }
 
-                        //*******************************************************************
+            //*******************************************************************
 
 			newBase.occupancy.fragmentNo1 = positionOnOriginalFrag.fragmentNo1;
 			newBase.occupancy.pos = positionOnOriginalFrag.pos;
@@ -924,9 +956,9 @@ void sequenceFragments(string outputFragmentsFile)
 		if (phi29AttachmentNumCurrent < 1)
 			phi29AttachmentNumCurrent = 1;
 
+        // attach primers to fragments to create new fragments
 		attachPhi29(phi29AttachmentNumCurrent);
-
-
+        // TODO
 		OneStepAheadPhi29();
 
 		double wholeCoverageRate = (double) wholeCoverage / (double) dnaLength;
@@ -970,7 +1002,7 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
 	readFile = open_file(filename.c_str(), "wt");
 	(averageReadLength) = 0;
 	(readNumber) = 0;
-        Coord refPos = 0;
+    Coord refPos = 0;
 	Coverage singleStrandCounterAtTheEnd = 0;
 	for (FragmentID fragIndex = 0; fragIndex < fragmentList.size(); fragIndex++)
 	{
@@ -994,35 +1026,23 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
 				readsList.push_back(readTemp);
 				readNumber ++;
 
-                                /****************** #2.0 */
-                                Coord original = fragmentList[fragIndex].dna[posIndex].occupancy.original;
-                                Coord prec = fragmentList[fragIndex].dna[posIndex-1].occupancy.original;
-                                if(original == 0) {
-                                    if(prec > 0) {
-                                        original = prec - 1;  //#2.0 hackey hack
-                                        cout << "+ " << prec << " -> " << original << endl;
-                                    } else if(prec < 0) {
-                                        original = prec + 1;  //#2.0 hackey hack
-                                        cout << "- " << prec << " -> " << original << endl;
-                                    } else {
-                                        cout << "There're still gaps" << endl;
-                                    }
-                                }
+                /****************** #2.0 */
+                // get the position of this base on the original reference sequence
+                Coord original = fragmentList[fragIndex].dna[posIndex].occupancy.original;
+                if(original == 0) {
+                    // if there is no value for the original position, infer it from the neighbour base
+                    Coord prec = fragmentList[fragIndex].dna[posIndex-1].occupancy.original;
+                    original = prec + 1;
+                }
 
-                                if(original == 0) {
-                                    cout << "I failed" << endl;
-                                }
-
-                                char strand = '+'; //#2.0
-                                if(original > 0) {
-                                    refPos = original - readTemp.size();  //#2.0
-                                    if(refPos == 0) cout << "Upsi Daisy +" << endl;
-                                } else {
-                                    refPos = (-1)*original ; //#2.0
-                                    strand = '-';            //#2.0
-                                    if(refPos == 0) cout << "Upsi Daisy -" << endl;
-                                }
-                                /*******************/
+                char strand = '+';
+                if(original > 0) {
+                    refPos = original - readTemp.size() - 1;
+                } else {
+                    refPos = (-1)*original ;
+                    strand = '-';
+                }
+                /*******************/
 
 				averageReadLength = averageReadLength + readTemp.size();
                                 fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c | 1\n", readNumber, readTemp.size(), fragIndex, posIndex, refPos, strand); //#2.0
@@ -1046,40 +1066,28 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
 			{
 				readsList.push_back(readTemp2);
 				cout.flush();
-				readNumber ++;
-                                /****************** #2.0 */
-                                Coord original = fragmentList[fragIndex].dna[posIndex].occupancy.original;
-                                Coord prec = fragmentList[fragIndex].dna[posIndex-1].occupancy.original;
-                                if(original == 0) {
-                                    if(prec > 0) {
-                                        original = prec - 1;  //#2.0 hackey hack
-                                        cout << "+ " << prec << " -> " << original << endl;
-                                    } else if(prec < 0) {
-                                        original = prec + 1;  //#2.0 hackey hack
-                                        cout << "- " << prec << " -> " << original << endl;
-                                    } else {
-                                        cout << "There're still gaps" << endl;
-                                    }
-                                }
+                readNumber ++;
+                /****************** #2.0 */
+                // get the position of this base on the original reference sequence
+                Coord original = fragmentList[fragIndex].dna[posIndex].occupancy.original;
+                if(original == 0) {
+                    // if there is no value for the original position, infer it from the neighbour base
+                    Coord prec = fragmentList[fragIndex].dna[posIndex-1].occupancy.original;
+                    original = prec + 1;
+                }
 
-                                if(original == 0) {
-                                    cout << "I failed" << endl;
-                                }
-
-                                char strand = '+'; //#2.0
-                                if(original > 0) {
-                                    refPos = original - readTemp2.size();  //#2.0
-                                    if(refPos == 0) cout << "Upsi Daisy +" << endl;
-                                } else {
-                                    refPos = (-1)*original ; //#2.0
-                                    strand = '-';            //#2.0
-                                    if(refPos == 0) cout << "Upsi Daisy -" << endl;
-                                }
-                                /*******************/
+                char strand = '+';
+                if(original > 0) {
+                    refPos = original - readTemp2.size() - 1;
+                } else {
+                    refPos = (-1)*original ;
+                    strand = '-';
+                }
+                /*******************/
 
 				averageReadLength = averageReadLength + readTemp2.size();
-                                fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c | 2\n", readNumber, readTemp2.size(), fragIndex, posIndex, refPos, strand); //#2.0
-                                fprintfSeq(readFile,"%c",readTemp2);
+                fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c | 2\n", readNumber, readTemp2.size(), fragIndex, posIndex, refPos, strand); //#2.0
+                fprintfSeq(readFile,"%c",readTemp2);
 				fprintf(readFile, "\n");
 			}
 		}
@@ -1306,6 +1314,7 @@ int main(int argc, char *argv[])
 	cout << "\nCleavage started ..." << endl;
 	cout << "Writing amplicons in " << outputReadsName << endl;
 	cleaveFragments(outputReadsName, averageReadLength, readNumber);
+    writeFragmentList();
 	cout << "\nCleavage finished." << endl;
 	cout << "**************************************"<< endl;
 	cout << "Amplification finished." << endl;
