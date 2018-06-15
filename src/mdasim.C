@@ -122,6 +122,11 @@ void writeSeq(DNAType seq)
 		cout << seq.at(i);
 }
 
+/**
+ * @brief reverseComplement
+ * @param base
+ * @return the complementary base (A<->T, C<->G, U->A)
+ */
 inline Base reverseComplement(Base base)
 {
 	switch(toupper(base))
@@ -210,7 +215,11 @@ inline Base mutateBase(Base base)
         }
 }
 
-
+/**
+ * @brief reverseComplementSeq
+ * @param seq sequence to create complement for
+ * @return complementary sequence
+ */
 inline DNAType reverseComplementSeq(DNAType seq)
 {
 	DNAType seqRC;
@@ -611,7 +620,6 @@ void initializeFragmentList()
 	}
 }
 
-
 void writeAttachmentMeritList(vector<AttachmentMerit> attachmentMeritList)
 {
 	for (int i = 0; i < attachmentMeritList.size(); i++)
@@ -803,7 +811,6 @@ void attachPhi29(int phi29AttachmentNumCurrent)
 	}
 }
 
-
 /* a predicate for removing finished phi29 implemented as function */
 bool zeroExpectedLength (Phi29 &phi29Value) { return (phi29Value.expectedLength == 0); }
 
@@ -971,7 +978,6 @@ void sequenceFragments(string outputFragmentsFile)
 	cout << endl;
 
 }
-
 
 void cleaveFragments(string filename, double averageReadLength, FragmentID readNumber)
 {
