@@ -514,21 +514,6 @@ void writephi29List()
 	}
 }
 
-/**
- * @brief loadFragmentList
- * @param inputFilename
- * @deprecated unused
- */
-void loadFragmentList(string inputFilename)
-{
-	FILE * fragmentFile = NULL;
-	fragmentFile = open_file(inputFilename.c_str(), "rt");
-// fill fragmentList out
-//initialize singleStrandCoverage, wholeCoverage; dnaLength
-	if(fragmentFile)
-		close_file(fragmentFile);
-}
-
 void saveFragmentList(string Filename) // add error message
 {
 	FILE * fragmentFile = NULL;
@@ -1255,29 +1240,15 @@ int main(int argc, char *argv[])
 	cout << endl;
 	cout.flush();
 
-    // load reference sequence
-    /*if (!FragmentasInput) // DNA sequence as input
-    {*/
-		cout << "**************************************" << endl;
-		cout << "Loading reference DNA sequence ..." << endl;
-		if(inputFileName != "")
-			loadOriginalSequence(inputFileName);
-		//writeDNA();
-		initializeFragmentList();
-		if (Writefragmentasoutput)
-			saveFragmentList(outputFragmentsFile);
-		cout << "DNA sequence loaded." << endl;
-
-    /*}
-    else
-	{
-        //this is old code, since this is not in Options anymore!
-		cout << "**************************************"<< endl;
-		cout << "Loading fragments ..." << endl;
-		if(inputFileName != "")
-			loadFragmentList(inputFileName);
-		cout << "Fragments loaded." << endl;
-    };*/
+    cout << "**************************************" << endl;
+    cout << "Loading reference DNA sequence ..." << endl;
+    if(inputFileName != "")
+        loadOriginalSequence(inputFileName);
+    //writeDNA();
+    initializeFragmentList();
+    if (Writefragmentasoutput)
+        saveFragmentList(outputFragmentsFile);
+    cout << "DNA sequence loaded." << endl;
 
     // set average primer number based on dna length, coverage and fragment length
     // CoverageToPrimerConst = 1000 defined in header
