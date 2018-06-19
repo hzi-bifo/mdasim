@@ -49,8 +49,8 @@ Copyright 2018- Victoria Sack (victoria.sack@helmholtz-hzi.de) and David Lähnem
 #define MAXFILECHAR	2000
 
 Option OPTIONS[] = {
-        Option('l', (char *)"log", NEEDS_ARG, (char *)"          = file name for a log file of all single nucleotide errors that happen during amplification"), //#2.0
-        Option('m', (char *)"mutationrate", NEEDS_ARG, (char *)" = chance of a nucleotide substitution"),       //#2.0
+    Option('l', (char *)"log", NEEDS_ARG, (char *)"          = file name for a log file of all single nucleotide errors that happen during amplification"), //#2.0
+    Option('m', (char *)"mutationrate", NEEDS_ARG, (char *)" = chance of a nucleotide substitution"),       //#2.0
 	Option('V', (char *)"version", NO_ARG, (char *)"        prints the version"),
 	Option('h', (char *)"help", NO_ARG, (char *)"           shows this help"),
 	Option('v', (char *)"verbose", NO_ARG, (char *)"        extended verbose for debug mode"),
@@ -1045,7 +1045,7 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
                 /*******************/
 
 				averageReadLength = averageReadLength + readTemp.size();
-                                fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c | 1\n", readNumber, readTemp.size(), fragIndex, posIndex, refPos, strand); //#2.0
+                fprintf(readFile, ">R%ld | length = %ld | ref = %ld | strand = %c \n", readNumber, readTemp.size(), refPos, strand); //#2.0
 				fprintfSeq(readFile,"%c",readTemp);
 				fprintf(readFile, "\n");
 			}
@@ -1086,7 +1086,7 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
                 /*******************/
 
 				averageReadLength = averageReadLength + readTemp2.size();
-                fprintf(readFile, ">R%ld | length = %ld |fragment = %ld | position = %ld | ref = %ld | strand = %c | 2\n", readNumber, readTemp2.size(), fragIndex, posIndex, refPos, strand); //#2.0
+                fprintf(readFile, ">R%ld | length = %ld | ref = %ld | strand = %c \n", readNumber, readTemp2.size(), refPos, strand); //#2.0
                 fprintfSeq(readFile,"%c",readTemp2);
 				fprintf(readFile, "\n");
 			}
