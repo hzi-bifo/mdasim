@@ -48,7 +48,6 @@ def match(am_seq, ref_seq, start):
         if(ref_seq[i+start] != am_seq[i]):
             preceeding_errors += 1
             fails += 1
-            print(str(i+start) + ": " + ref_seq[i+start] + " -> " + am_seq[i])
             if fails > len(am_seq)*0.01 or preceeding_errors > 2:
                 return False
         else:
