@@ -863,12 +863,12 @@ void OneStepAheadPhi29()
 
                     if(newBase.occupancy.original > 0)
                     {
-                        fprintf(errorLog, "%ld\t", ((long int) newBase.occupancy.original));
+                        fprintf(errorLog, "%ld\t", ((long int) newBase.occupancy.original)-1);
                         fprintf(errorLog, "%c\t", newBase.base);
                     }
                     else
                     {
-                        fprintf(errorLog, "%ld\t", ((long int) ((-1)*newBase.occupancy.original)));
+                        fprintf(errorLog, "%ld\t", ((long int) ((-1)*newBase.occupancy.original))-1);
                         fprintf(errorLog, "%c\t", reverseComplement(newBase.base));
                     }
 
