@@ -48,7 +48,8 @@ def match(am_seq, ref_seq, start):
         if(ref_seq[i+start] != am_seq[i]):
             preceeding_errors += 1
             fails += 1
-            if fails > len(am_seq)*0.01 or preceeding_errors > 10:
+            print(str(i+start) + ": " + ref_seq[i+start] + " -> " + am_seq[i])
+            if fails > len(am_seq)*0.01 or preceeding_errors > 2:
                 return False
         else:
             preceeding_errors = 0
@@ -119,12 +120,10 @@ while i < len(lines):
     length = int(header[2])
     name = header[0]
     name_id = int(name.replace("R",""))
-    original_fragment = int(header[4])
-    last_pos = int(header[6])
-    ref_start_pos = int(header[8])
-    strand = header[10]
+    ref_start_pos = int(header[4])
+    strand = header[6]
     seq = lines[i+1]
-    amplicons.append({'id':name_id, 'orig':original_fragment, 'refstart':ref_start_pos, 'last':last_pos, 'seq':seq, 'strand':strand, 'offset':0})
+    amplicons.append({'id':name_id, 'refstart':ref_start_pos, 'seq':seq, 'strand':strand, 'offset':0})
     i+=2
 
 # get reference sequence

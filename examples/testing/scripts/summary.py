@@ -36,7 +36,7 @@ sys.stdout.write('Analysing pileup');
 for line in inputfile:
     #print(line);
     contents = line.split();
-    position = int(contents[1]);
+    position = int(contents[1])-1;
     bases = contents[4];
     isQualityChar = False;
     isIndelChar = False;
