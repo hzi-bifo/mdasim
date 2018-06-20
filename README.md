@@ -71,13 +71,12 @@ The required memory is linearly proportional to the size of the input genome and
 The format is fasta, with the ID line of each amplicon as follows:
 
 ```
-><LA> | name = R<IOA> | fragment = <OF> | position = <LPOF>
+>R<IOA> | length = <LA> | ref = <POS> | strand = <S> 
 ```
-
-* `<LA>`: length of this amplicon
-* `R<IOA>`: amplicon name consisting of `R` and an amplicon index counter that starts at 1 (i.e. the last one shows the total number of amplicons in the file)
-* `<OF>`: index (`<IOA>`) of the fragment that this amplicon was created from, `0` is the input fasta sequence
-* `<LPOF>`: last position of this amplicon on the fragment that it was created from
+* `R<IOA>`: amplicon name consisting of `R` and an amplicon index counter that starts at 1 (i.e. the last one shows the total number of amplicons in the file). Within the output file, the name of a fragment is unique.
+* `<LA>`: length of the amplicon
+* `<POS>`: position on the original input sequence where this fragment can be aligned to. Positions start at 0.
+* `<S>`: `+` or `-`, indicating the positive or negative strand. In order to align a negative strand with the original input sequence, it must be reverted and complemented.
 
 ### `--log errors.log`
 
