@@ -19,7 +19,7 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 */
 
 /***************************************************************************
- * Title:          getopt.C 
+ * Title:          getopt.C
  * Author:         Hamidreza Chitsaz
  * Created:        2011
  * Last modified:  10/10/2011
@@ -35,155 +35,154 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 
 void GetOpt::parseArgs()
 {
-	optionsNum = -1;
-	while(options[++optionsNum].getShortForm());
+  optionsNum = -1;
+  while(options[++optionsNum].getShortForm());
 
-	int i = 0;
-	char buffer[MAX_BUF_SIZE];
-	
-		
-	while (i++ < argc - 1)
-	{
-		if(argv[i][0] == '-')
-		{
-			if(argv[i][1] == '-')
-			{
-				int j = 2;
-				bool hasArg = false;
-				char a[MAX_BUF_SIZE];
-				
-				while(argv[i][j] && (j < MAX_BUF_SIZE))
-				{
-					if(argv[i][j] == '=')
-					{
-						hasArg = true;
-						break;
-					}
-					else
-					{
-						buffer[j-2] = argv[i][j];
-						j++;
-					}
-				}
-				buffer[j-2] = 0;
-				
-				j++;
-				int k = 0;
+  int i = 0;
+  char buffer[MAX_BUF_SIZE];
 
-				while(argv[i][j] && (j < MAX_BUF_SIZE))
-				{
-					a[k++] = argv[i][j++];
-				}
-				a[k] = 0;
 
-				for(j = 0; j < optionsNum; j++)
-					if(!strcmp(buffer, options[j].getLongForm()))
-						break;
+  while (i++ < argc - 1)
+  {
+    if(argv[i][0] == '-')
+    {
+      if(argv[i][1] == '-')
+      {
+        int j = 2;
+        bool hasArg = false;
+        char a[MAX_BUF_SIZE];
 
-				if(j == optionsNum)
-				{
-					fprintf(stderr, "Undefined option --%s\n", buffer);
-					exit(1);
-				}
-				if (options[j].getArgRequirement() == NO_ARG && hasArg)
-				{
-					fprintf(stderr, "Option --%s does not accept arguments.\n", buffer);
-					exit(1);
-				}
+        while(argv[i][j] && (j < MAX_BUF_SIZE))
+        {
+          if(argv[i][j] == '=')
+          {
+            hasArg = true;
+            break;
+          }
+          else
+          {
+            buffer[j-2] = argv[i][j];
+            j++;
+          }
+        }
+        buffer[j-2] = 0;
 
-				if (options[j].getArgRequirement() == NEEDS_ARG && !hasArg)
-				{
-					fprintf(stderr, "Option --%s requires argument.\n", buffer);
-					exit(1);
-				}
-				
-				parsedOptions[parsedOptionsNum] = new Option(options[j].getShortForm(), options[j].getLongForm(), options[j].getArgRequirement(), options[j].getDesc());
-				if(hasArg)
-					parsedOptions[parsedOptionsNum]->setArg(a);
-				parsedOptionsNum++;
-			} 
-			else if(argv[i][1])
-			{
-				int j;
-				for(j = 0; j < optionsNum; j++)
-					if(argv[i][1] == options[j].getShortForm())
-						break;
-				
-				if(j == optionsNum)
-				{
-					fprintf(stderr, "Undefined option -%c\n", argv[i][1]);
-					exit(1);
-				}
-				
-				parsedOptions[parsedOptionsNum] = new Option(options[j].getShortForm(), options[j].getLongForm(), options[j].getArgRequirement(), options[j].getDesc());
-				
-				char a[MAX_BUF_SIZE];
-				j = 2;
-				bool start = false;
-				int k = 0;
+        j++;
+        int k = 0;
 
-				while(argv[i][j] && (j < MAX_BUF_SIZE))
-				{
-					if(start)
-						a[k++] = argv[i][j++];
-					else
-						if(argv[i][j++] == '=')
-							start = true;
-				}
-				a[k] = 0;
+        while(argv[i][j] && (j < MAX_BUF_SIZE))
+        {
+          a[k++] = argv[i][j++];
+        }
+        a[k] = 0;
 
-				if (parsedOptions[parsedOptionsNum]->getArgRequirement() == NO_ARG && start)
-				{
-					fprintf(stderr, "Option -%c does not accept arguments.\n", argv[i][1]);
-					exit(1);
-				}
+        for(j = 0; j < optionsNum; j++)
+          if(!strcmp(buffer, options[j].getLongForm()))
+            break;
 
-				if (parsedOptions[parsedOptionsNum]->getArgRequirement() == NEEDS_ARG && !start)
-				{
-					fprintf(stderr, "Option -%c requires argument.\n", argv[i][1]);
-					exit(1);
-				}
-				
-				if(start)
-					parsedOptions[parsedOptionsNum]->setArg(a);
+        if(j == optionsNum)
+        {
+          fprintf(stderr, "Undefined option --%s\n", buffer);
+          exit(1);
+        }
+        if (options[j].getArgRequirement() == NO_ARG && hasArg)
+        {
+          fprintf(stderr, "Option --%s does not accept arguments.\n", buffer);
+          exit(1);
+        }
 
-				parsedOptionsNum++;
-			}
-		}
-		else
-		{
-			parsedOptions[parsedOptionsNum] = new Option(FREE_ARG, NULL, 0, NULL);
-			parsedOptions[parsedOptionsNum++]->setArg(argv[i]);
-		}
+        if (options[j].getArgRequirement() == NEEDS_ARG && !hasArg)
+        {
+          fprintf(stderr, "Option --%s requires argument.\n", buffer);
+          exit(1);
+        }
 
-	}
+        parsedOptions[parsedOptionsNum] = new Option(options[j].getShortForm(), options[j].getLongForm(), options[j].getArgRequirement(), options[j].getDesc());
+        if(hasArg)
+          parsedOptions[parsedOptionsNum]->setArg(a);
+        parsedOptionsNum++;
+      }
+      else if(argv[i][1])
+      {
+        int j;
+        for(j = 0; j < optionsNum; j++)
+          if(argv[i][1] == options[j].getShortForm())
+            break;
+
+        if(j == optionsNum)
+        {
+          fprintf(stderr, "Undefined option -%c\n", argv[i][1]);
+          exit(1);
+        }
+
+        parsedOptions[parsedOptionsNum] = new Option(options[j].getShortForm(), options[j].getLongForm(), options[j].getArgRequirement(), options[j].getDesc());
+
+        char a[MAX_BUF_SIZE];
+        j = 2;
+        bool start = false;
+        int k = 0;
+
+        while(argv[i][j] && (j < MAX_BUF_SIZE))
+        {
+          if(start)
+            a[k++] = argv[i][j++];
+          else
+            if(argv[i][j++] == '=')
+              start = true;
+        }
+        a[k] = 0;
+
+        if (parsedOptions[parsedOptionsNum]->getArgRequirement() == NO_ARG && start)
+        {
+          fprintf(stderr, "Option -%c does not accept arguments.\n", argv[i][1]);
+          exit(1);
+        }
+
+        if (parsedOptions[parsedOptionsNum]->getArgRequirement() == NEEDS_ARG && !start)
+        {
+          fprintf(stderr, "Option -%c requires argument.\n", argv[i][1]);
+          exit(1);
+        }
+
+        if(start)
+          parsedOptions[parsedOptionsNum]->setArg(a);
+
+        parsedOptionsNum++;
+      }
+    }
+    else
+    {
+      parsedOptions[parsedOptionsNum] = new Option(FREE_ARG, NULL, 0, NULL);
+      parsedOptions[parsedOptionsNum++]->setArg(argv[i]);
+    }
+
+  }
 }
 
 char *GetOpt::help()
 {
-	char buf[MAX_BUF_SIZE];
+  char buf[MAX_BUF_SIZE];
 
-	strcpy(helpstring, "\n\n");
-	for(int j = 0; j < optionsNum; j++)
-	{
-		buf[0] = 0;
-		if((options[j].getShortForm() <= 'Z' && options[j].getShortForm() >= 'A') || (options[j].getShortForm() <= 'z' && options[j].getShortForm() >= 'a'))
-		{
-			sprintf(buf, "\t-%c,--%s      %s\n", options[j].getShortForm(), options[j].getLongForm(), options[j].getDesc());
-			strcat(helpstring, buf);
-		}
-	}
+  strcpy(helpstring, "\n\n");
+  for(int j = 0; j < optionsNum; j++)
+  {
+    buf[0] = 0;
+    if((options[j].getShortForm() <= 'Z' && options[j].getShortForm() >= 'A') || (options[j].getShortForm() <= 'z' && options[j].getShortForm() >= 'a'))
+    {
+      sprintf(buf, "\t-%c,--%s      %s\n", options[j].getShortForm(), options[j].getLongForm(), options[j].getDesc());
+      strcat(helpstring, buf);
+    }
+  }
 
-	for(int j = 0; j < optionsNum; j++)
-	{
-		buf[0] = 0;
-		if(!((options[j].getShortForm() <= 'Z' && options[j].getShortForm() >= 'A') || (options[j].getShortForm() <= 'z' && options[j].getShortForm() >= 'a')))
-		{
-			sprintf(buf, "\t   --%s      %s\n", options[j].getLongForm(), options[j].getDesc());
-			strcat(helpstring, buf);
-		}
-	}
+  for(int j = 0; j < optionsNum; j++)
+  {
+    buf[0] = 0;
+    if(!((options[j].getShortForm() <= 'Z' && options[j].getShortForm() >= 'A') || (options[j].getShortForm() <= 'z' && options[j].getShortForm() >= 'a')))
+    {
+      sprintf(buf, "\t   --%s      %s\n", options[j].getLongForm(), options[j].getDesc());
+      strcat(helpstring, buf);
+    }
+  }
 
-	return helpstring;
+  return helpstring;
 }
-

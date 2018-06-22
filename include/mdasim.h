@@ -19,7 +19,7 @@ Copyright 2012- Zeinab Taghavi (ztaghavi@wayne.edu)
 */
 
 /***************************************************************************
- * Title:          mdasim.h 
+ * Title:          mdasim.h
  * Author:         Zeinab Taghavi
  * Created:        2012
  * Last modified:  5/27/2014
@@ -78,14 +78,14 @@ struct Position
         // Comparator. A Position is smaller than another,
         // if it's on a fragment created earlier during the amplifiction
         // or if both are on the same fragment, if it's position on the fragment is smaller
-	bool const operator <(const Position rhs) const
-	{ 
-		if (fragmentNo1 < rhs.fragmentNo1) 
-			return true;
-		else if (fragmentNo1 > rhs.fragmentNo1)
-			return false;
-		else 
-			return (pos < rhs.pos);
+  bool const operator <(const Position rhs) const
+  {
+    if (fragmentNo1 < rhs.fragmentNo1)
+      return true;
+    else if (fragmentNo1 > rhs.fragmentNo1)
+      return false;
+    else
+      return (pos < rhs.pos);
         }
 };
 
@@ -93,28 +93,28 @@ struct Position
  * FragmentBase consists of the base and Position
  */
 struct FragmentBase {
-	Base base;
-	Position occupancy;
+  Base base;
+  Position occupancy;
 };
 
 typedef basic_string<FragmentBase> FragmentDNAType;
 struct Fragment {
-	FragmentDNAType dna;
+  FragmentDNAType dna;
 };
 
 typedef vector<Fragment> FragmentList;
 typedef vector<DNAType> ReadsList;
-typedef DNAType Primer; 
+typedef DNAType Primer;
 typedef vector<Primer> PrimerList;
 struct PrimerPosition {
-	vector<Position> list;
-	Primer ReverseComplement;
-	Coverage currentNo;
-	Coverage availalePositionsNo;
-	Coverage availableFreePositionsNo;
+  vector<Position> list;
+  Primer ReverseComplement;
+  Coverage currentNo;
+  Coverage availalePositionsNo;
+  Coverage availableFreePositionsNo;
 };
 
-/* reverse complement Primer list and its availability */ 
+/* reverse complement Primer list and its availability */
 typedef map<Primer, PrimerPosition> PrimerPositionList;
 
 /**
@@ -122,8 +122,8 @@ typedef map<Primer, PrimerPosition> PrimerPositionList;
  */
 struct Phi29 {
     FragmentID fragmentNo1;
-	Coord expectedLength;
-	Position currentPosition;
+  Coord expectedLength;
+  Position currentPosition;
 };
 
 typedef list<Phi29> Phi29List;
@@ -135,39 +135,39 @@ typedef set<Position> PositionSet;
  * @brief The FreePrimerPosition struct
  */
 struct FreePrimerPosition {
-	PositionSet set;
-	Coverage currentNo;
+  PositionSet set;
+  Coverage currentNo;
 };
 
 typedef map<Primer, FreePrimerPosition> FreePrimerPositionSets;
 typedef pair<Primer, FreePrimerPosition> PrimerPositionPair;
 
 struct AttachmentMerit {
-	Primer	primer;
-	Coverage coverage;
-	Coverage phi29AttachmentNum;
+  Primer	primer;
+  Coverage coverage;
+  Coverage phi29AttachmentNum;
 };
 /* a predicate for sorting implemented as function */
 inline bool AttachmentCompare(AttachmentMerit aM1, AttachmentMerit aM2) { return (aM1.coverage > aM2.coverage);}
 
-template <class T> 
+template <class T>
 inline T rounddiv(T a1, T a2)
 {
-	if (a2 == 0)
-		exitMsg((char *)" Error in rounddiv. a2 is zero.", INTERNAL_WOW_ERROR);
-	T b = a1 / a2;
-	if ((a1 % a2) > (a2 / 2))
-		b ++;
-	return b;
+  if (a2 == 0)
+    exitMsg((char *)" Error in rounddiv. a2 is zero.", INTERNAL_WOW_ERROR);
+  T b = a1 / a2;
+  if ((a1 % a2) > (a2 / 2))
+    b ++;
+  return b;
 }
 
-template <class T> 
+template <class T>
 inline T ceildiv(T a1, T a2)
 {
-	if (a2 == 0)
-		exitMsg((char *)" Error in ceildiv. a2 is zero.", INTERNAL_WOW_ERROR);
-	T b = a1 / a2;
-	if ((a1 % a2) > 0)
-		b ++;
-	return b;
+  if (a2 == 0)
+    exitMsg((char *)" Error in ceildiv. a2 is zero.", INTERNAL_WOW_ERROR);
+  T b = a1 / a2;
+  if ((a1 % a2) > 0)
+    b ++;
+  return b;
 }

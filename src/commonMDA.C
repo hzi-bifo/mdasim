@@ -91,38 +91,38 @@ void version(char* prog)
         //******************************************************
 
         printf("mdasim 1.2 (MDAsim 1.2) \n");
-	puts("Author: Zeinab Taghavi");
-	puts("Copyright (C) 2012-2013");
-	puts("Wayne State University");
-	puts("Detroit, MI");
+  puts("Author: Zeinab Taghavi");
+  puts("Copyright (C) 2012-2013");
+  puts("Wayne State University");
+  puts("Detroit, MI");
 }
 
 FILE *open_file(char *fname, const char *mode)
 {
-	FILE *ret = fopen(fname, mode);
-	if(!ret)
-	{
-		char buf[10000] = "Error: failed to open file ";
-		strncat(buf, fname, 9500);
-		strcat(buf, " in mode ");
-		strncat(buf, (char *)mode, 100);
-		strcat(buf, ".\n");
-		exitMsg(buf, FILE_OPEN_ERROR);
-	}
-	return ret;
+  FILE *ret = fopen(fname, mode);
+  if(!ret)
+  {
+    char buf[10000] = "Error: failed to open file ";
+    strncat(buf, fname, 9500);
+    strcat(buf, " in mode ");
+    strncat(buf, (char *)mode, 100);
+    strcat(buf, ".\n");
+    exitMsg(buf, FILE_OPEN_ERROR);
+  }
+  return ret;
 }
 
 FILE *open_file(std::string fname, const char *mode)
 {
-	return open_file((char*)fname.c_str(), mode);
+  return open_file((char*)fname.c_str(), mode);
 }
 
 void exitMsg(char *msg, Error c)
 {
-	if(msg)
-	{
-		fputs(msg, stderr);
-		fputc('\n', stderr);
-	}
-	exit(c);
+  if(msg)
+  {
+    fputs(msg, stderr);
+    fputc('\n', stderr);
+  }
+  exit(c);
 }

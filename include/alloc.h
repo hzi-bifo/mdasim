@@ -20,7 +20,7 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 
 
 /***************************************************************************
- * Title:          alloc.h 
+ * Title:          alloc.h
  * Author:         Hamidreza Chitsaz
  * Created:        2011
  * Last modified:  03/14/2012
@@ -38,53 +38,53 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 
 class Alloc {
 public:
-	
 
-	inline	void* xcalloc(size_t m, size_t n)
-	{
-		void* ptr;
 
-		if(m == 0 || n == 0)
-			return NULL;
+  inline	void* xcalloc(size_t m, size_t n)
+  {
+    void* ptr;
 
-		if (!(ptr = calloc(m, n)))
-		{
-			fputs("Error in calloc()\n", stderr);
-			exit(EXIT_FAILURE);
-		}
+    if(m == 0 || n == 0)
+      return NULL;
 
-		return ptr;
-	}
+    if (!(ptr = calloc(m, n)))
+    {
+      fputs("Error in calloc()\n", stderr);
+      exit(EXIT_FAILURE);
+    }
 
-	inline void* xmalloc(size_t n)
-	{
-		void* ptr;
+    return ptr;
+  }
 
-		if (!(ptr = malloc(n)))
-		{
-			fputs("Error in malloc()\n", stderr);
-			exit(EXIT_FAILURE);
-		}
-		return ptr;
-	}
+  inline void* xmalloc(size_t n)
+  {
+    void* ptr;
 
-	inline void* xrealloc(void* ptr, size_t n)
-	{
-		if (!(ptr = realloc(ptr, n)) && n != 0)
-		{
-			printf("%ld\n", n);
-			fputs("Error in realloc()\n", stderr);
-			perror("");
-			exit(EXIT_FAILURE);
-		}
-		return ptr;
-	}
+    if (!(ptr = malloc(n)))
+    {
+      fputs("Error in malloc()\n", stderr);
+      exit(EXIT_FAILURE);
+    }
+    return ptr;
+  }
 
-	inline void xfree(void* &ptr)
-	{
-		if(ptr) free(ptr);
-			ptr = NULL;
-	}
+  inline void* xrealloc(void* ptr, size_t n)
+  {
+    if (!(ptr = realloc(ptr, n)) && n != 0)
+    {
+      printf("%ld\n", n);
+      fputs("Error in realloc()\n", stderr);
+      perror("");
+      exit(EXIT_FAILURE);
+    }
+    return ptr;
+  }
+
+  inline void xfree(void* &ptr)
+  {
+    if(ptr) free(ptr);
+      ptr = NULL;
+  }
 
 };
 

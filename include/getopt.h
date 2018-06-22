@@ -20,7 +20,7 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 
 
 /***************************************************************************
- * Title:          getopt.h 
+ * Title:          getopt.h
  * Author:         Hamidreza Chitsaz
  * Created:        2011
  * Last modified:  10/10/2011
@@ -47,49 +47,49 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 
 class Option {
 private:
-	char shortForm;
-	char *longForm;
-	int argRequirement;
-	char arg[MAX_BUF_SIZE];
-	char description[MAX_BUF_SIZE];
+  char shortForm;
+  char *longForm;
+  int argRequirement;
+  char arg[MAX_BUF_SIZE];
+  char description[MAX_BUF_SIZE];
 public:
-	Option(char s, char *l, int r, char *d)
-	{
-		shortForm = s;
-		longForm = l;
-		argRequirement = r;
-		description[0] = 0;
-		if(d) strcpy(description, d);
-		arg[0] = 0;
-	}
-	char getShortForm(){ return shortForm;};
-	char *getLongForm(){ return longForm;};
-	int getArgRequirement(){ return argRequirement;};
-	char *getArg() { return arg;};
-	char *getDesc() { return description;};
-	void setArg(char *a) {strcpy(arg, a);};
+  Option(char s, char *l, int r, char *d)
+  {
+    shortForm = s;
+    longForm = l;
+    argRequirement = r;
+    description[0] = 0;
+    if(d) strcpy(description, d);
+    arg[0] = 0;
+  }
+  char getShortForm(){ return shortForm;};
+  char *getLongForm(){ return longForm;};
+  int getArgRequirement(){ return argRequirement;};
+  char *getArg() { return arg;};
+  char *getDesc() { return description;};
+  void setArg(char *a) {strcpy(arg, a);};
 };
 
 class GetOpt {
 private:
-	int argc;
-	char **argv;
-	void parseArgs();
-	
-	Option *options;
-	int optionsNum;
-	char helpstring[MAX_BUF_SIZE];
+  int argc;
+  char **argv;
+  void parseArgs();
+
+  Option *options;
+  int optionsNum;
+  char helpstring[MAX_BUF_SIZE];
 
 
-	Option *parsedOptions[MAX_BUF_SIZE];
-	int parsedOptionsNum;
-	int currentOp;
+  Option *parsedOptions[MAX_BUF_SIZE];
+  int parsedOptionsNum;
+  int currentOp;
 public:
-	GetOpt(int a, char **v, Option *ops) {parsedOptionsNum = 0; currentOp = 0; argc = a; argv = v; options = ops; parseArgs();};
-	~GetOpt(){for(int i=0; i < parsedOptionsNum; i++) delete parsedOptions[i];};
-	bool hasNext() {return currentOp < parsedOptionsNum;};
-	Option *next(){return parsedOptions[currentOp++];}
-	char *help();
+  GetOpt(int a, char **v, Option *ops) {parsedOptionsNum = 0; currentOp = 0; argc = a; argv = v; options = ops; parseArgs();};
+  ~GetOpt(){for(int i=0; i < parsedOptionsNum; i++) delete parsedOptions[i];};
+  bool hasNext() {return currentOp < parsedOptionsNum;};
+  Option *next(){return parsedOptions[currentOp++];}
+  char *help();
 };
 
 #endif
