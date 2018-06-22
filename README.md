@@ -101,5 +101,5 @@ Smaller sizes of input fasta sequences combined with a low target coverage can g
 
 MDAsim 2 extends the original MDAsim 1.2. Whenever you use MDAsim 2, please cite both versions:
 * MDAsim 1.2 citation: [Taghavi, Z. and Draghici, S. (2012). MDAsim: a multiple displacement amplification simulator. In IEEE Conference on Bioinformatics and Biomedicine, pages 575–578.](https://doi.org/10.1109/BIBM.2012.6392622).
-* MDAsim 2 citation: Until there is a publication to cite, please cite the link to the tagged version that you use (e.g.: <https://github.com/hzi-bifo/mdasim/releases/v2.0.0>) or the exact bioconda version of the package that you use.
+* MDAsim 2 citation: Until there is a publication to cite, please cite the link to the tagged version that you use (e.g.: <https://github.com/hzi-bifo/mdasim/releases/v2.1.0>) or the exact bioconda version of the package that you use.
 
