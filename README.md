@@ -85,7 +85,7 @@ The format of the log file for single nucleotide substitution errors is tab sepa
 #pos\tref\tsub
 ```
 
-* `pos`: position on the original input sequence
+* `pos`: position on the original input sequence (0-based)
 * `ref`: reference nucleotide in the original input sequence that was replaced
 * `sub`: nucleotide that is generated in the strand of the original input sequence
 
