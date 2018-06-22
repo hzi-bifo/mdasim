@@ -1112,7 +1112,7 @@ void printErrorLogHeader(string inputFileName)
     }
     fprintf(errorLog, "#Generating software: %s\n",FILE_VERSION);
     fprintf(errorLog, "#Input sequence file: %s\n", inputFileName.c_str());
-    fprintf(errorLog, "#Position count starts at: 1\n");
+    fprintf(errorLog, "#Position count starts at: 0\n");
     fprintf(errorLog, "#pos\tref\tsub\n");
     fclose(errorLog);
 }
