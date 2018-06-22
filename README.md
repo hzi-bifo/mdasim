@@ -1,4 +1,4 @@
-MDAsim 2 extends the original published MDAsim 1.2, with MDAsim 2.0.0 including single nucleotide copy errors and outputs a respective log file of the introduced errors.
+MDAsim 2 extends the original published MDAsim 1.2, including single nucleotide copy errors and outputs a respective log file of the introduced errors.
 
 The original MDAsim 1.2 can be [found on sourceforge](https://sourceforge.net/projects/mdasim/) and we have kept its [README_mdasim1-2.txt](README_mdasim1-2.txt) for reference.
 For credits for different features, please refer to the [CREDITS_mdasim.txt](CREDITS_mdasim.txt) and the [change logs of the releases](https://github.com/hzi-bifo/mdasim/releases).

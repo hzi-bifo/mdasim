@@ -1,5 +1,5 @@
 """
-This pipeline tests the output of MDAsim for for presence and correctness of
+This pipeline tests the output of MDAsim for presence and correctness of
 single nucleotide errors. For further information, please refer to the README.
 """
 

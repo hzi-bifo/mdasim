@@ -1,6 +1,6 @@
-# Testing Pipeline for MDAsim 2.0
+# Testing Pipeline for MDAsim 2
 
-This pipeline was originally developed for testing and debugging the output of MDAsim for the presence of single nucleotide errors and to check the correctness of the respective log file. This is done via alignment of the created amplicons against the original input sequence with [`minimap2`](https://github.com/lh3/minimap2) and identification of differences to that reference with [`samtools mpileup`](http://www.htslib.org/doc/samtools.html). We have found it very useful and might use it for future testing, so we provide a cleaned up and documented version.
+This pipeline was originally developed for testing and debugging the output of MDAsim 2 for the presence of single nucleotide errors and to check the correctness of the respective log file. This is done via alignment of the created amplicons against the original input sequence with [`minimap2`](https://github.com/lh3/minimap2) and identification of differences to that reference with [`samtools mpileup`](http://www.htslib.org/doc/samtools.html). We have found it very useful and might use it for future testing, so we provide a cleaned up and documented version.
 
 
 ## Installation
@@ -80,4 +80,6 @@ The second one compares every position found in at least one of either the MDAsi
 
 ## Credits
 
-The pipeline uses [Snakemake](https://snakemake.readthedocs.io/en/stable/) as the pipelining framework and [bioconda](https://bioconda.github.io/) for software management. Apart from our own custom python scripts for creating readable summaries, the pipeline makes use of [minimap2](https://github.com/lh3/minimap2) ([Li, H. (2017). Minimap2: fast pairwise alignment for long nucleotide sequences](https://arxiv.org/abs/1708.01492)) and [samtools](http://www.htslib.org/doc/samtools.html). Exact versions used by the pipeline are documented in [requirements.txt](requirements.txt).
+The pipeline uses [Snakemake](https://snakemake.readthedocs.io/en/stable/) as the pipelining framework and [bioconda](https://bioconda.github.io/) for software management.
+Apart from our own custom python scripts for creating readable summaries, the pipeline makes use of [minimap2](https://github.com/lh3/minimap2) ([Li, H. (2017). Minimap2: fast pairwise alignment for long nucleotide sequences](https://arxiv.org/abs/1708.01492)) and [samtools](http://www.htslib.org/doc/samtools.html).
+Exact versions used by the pipeline are specified in [requirements.txt](requirements.txt).

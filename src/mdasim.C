@@ -41,11 +41,12 @@ Copyright 2018- Victoria Sack (victoria.sack@helmholtz-hzi.de) and David Lähnem
 
 #include "getopt.C"
 #include "mdasim.h"
+#include "commonMDA.h"
 #include "commonMDA.C"
 #include "sequence.C"
 
-#define FILE_STRING (char *)"mdasim"
-#define FILE_VERSION (char *)"mdasim 2.0.1"
+#define MAIN_COMMAND (char *)"mdasim"
+#define VERSION (char *)PACKAGE_STRING
 #define MAXFILECHAR	2000
 
 Option OPTIONS[] = {
@@ -1110,7 +1111,7 @@ void printErrorLogHeader(string inputFileName)
         string msg ("Error: Failed to open logfile. Please make sure all folders in the path exist.");
         exitMsg((char *) msg.c_str(), INPUT_ARG_ERROR);
     }
-    fprintf(errorLog, "#Generating software: %s\n",FILE_VERSION);
+    fprintf(errorLog, "#Generating software: %s\n",VERSION);
     fprintf(errorLog, "#Input sequence file: %s\n", inputFileName.c_str());
     fprintf(errorLog, "#Position count starts at: 0\n");
     fprintf(errorLog, "#pos\tref\tsub\n");
@@ -1137,14 +1138,14 @@ int main(int argc, char *argv[])
         if (count == 'V')
         {
             // print software version and exit
-			version(FILE_VERSION);
+			version(VERSION);
 			exit(EXIT_SUCCESS);
 		}
         else if (count == 'h')
 		{
             // print help and exit
 			printf("\nUsage: ");
-			printf(FILE_STRING);
+			printf(MAIN_COMMAND);
 			printf(" [optional args] --input=<input.fa> --output=<mda-amplified_fasta_prefix> --primers=<primers.fasta>\n");
 			printf("\nNote: The above used arguments have defaults, but it is recommended to explicitly set them.\n");
 			printf("Note: Arguments that require a value are marked with an '=' sign below. This needs to be used \n");
@@ -1230,7 +1231,7 @@ int main(int argc, char *argv[])
     time_t now;
     time(&now);
 
-	version(FILE_VERSION);
+	version(VERSION);
 	cout << "**************************************"<< endl;
 	cout << executedcommand;
 
