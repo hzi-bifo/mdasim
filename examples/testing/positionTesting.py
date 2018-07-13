@@ -40,6 +40,9 @@ def complementStrand(seq):
     return "".join(strand)
 
 def match(am_seq, ref_seq, start):
+    if len(am_seq)+start > len(ref_seq):
+        return False
+
     fails = 0
     i = 0
     failed = False
@@ -128,6 +131,8 @@ while i < len(lines):
 # get reference sequence
 for entry in SeqIO.parse(params.seq, "fasta"):                                  #read original reference sequence
     seq = entry.seq;
+
+print("Length of ref seq = " + str(len(seq)))
 
 total_fails = 0
 total = 0
