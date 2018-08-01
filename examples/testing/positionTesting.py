@@ -203,9 +203,16 @@ print("")
 
 
 # try to align the amplicons with faulty reference positions brute force
+minus_fails = 0
+plus_fails = 0
 found_fails = 0
 for f in fail:
     foundMatches = findRealPosition(f['seq'], seq, f['refstart'], f['id'])
     found_fails += len(foundMatches)
+    if f['strand'] == '-':
+        minus_fails += 1
+    else:
+        plus_fails += 1
 
 print("> FAILS (no alignment possible): " + str(len(fail)-found_fails) + " of " + str(len(amplicons)))
+print("-" + str(minus_fails)+ ":" + str(plus_fails))
