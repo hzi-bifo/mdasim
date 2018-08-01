@@ -149,8 +149,11 @@ correct_succ3 = 0
 # try to align the amplicons with the reference sequence at the position that
 # was noted in the header
 hits = [0]*5
+weird_amplicons = 0
 
 for amplicon in amplicons:                           # for every amplicon in the list
+    if (amplicon['refstart'] + len(amplicon['seq'])) > len(seq):
+        weird_amplicons += 1
     am_seq = amplicon['seq']
     corrections = [(0, False), (0, True), (1, False), (((-1)*len(am_seq))+1, False), ((len(am_seq)), True)]
     if True:
@@ -215,4 +218,5 @@ for f in fail:
         plus_fails += 1
 
 print("> FAILS (no alignment possible): " + str(len(fail)-found_fails) + " of " + str(len(amplicons)))
-print("-" + str(minus_fails)+ ":" + str(plus_fails))
+print("Fails on - strand " + str(minus_fails)+ "\nFails on + strand " + str(plus_fails))
+print("len(fragment)+pos(fragment) > len(ref_seq) : " + str(weird_amplicons))
