@@ -48,7 +48,8 @@ def match(am_seq, ref_seq, start):
     failed = False
     preceeding_errors = 0;
     while i < len(am_seq) and i+start < len(ref_seq):
-        if(ref_seq[i+start] != am_seq[i]):
+        pos_on_ref = (i + start) % len(ref_seq)
+        if ref_seq[pos_on_ref] != am_seq[i]:
             preceeding_errors += 1
             fails += 1
             if fails > len(am_seq)*0.01 or preceeding_errors > 2:
@@ -94,8 +95,8 @@ def findRealPosition(am_seq, ref_seq, pos, name):
     if(len(foundMatches) == 0):
         print("R" + str(name) + ", " + str(pos) + ", len " + str(len(am_seq)) + " could not be matched")
     else:
-        for match in foundMatches:
-            print("R" + str(name) + ", " + str(pos) + ", len " + str(len(am_seq)) + " should be at " + str(match['pos']) + " with " + match['src'])
+        for matched in foundMatches:
+            print("R" + str(name) + ", " + str(pos) + ", len " + str(len(am_seq)) + " should be at " + str(matched['pos']) + " with " + matched['src'])
 
     return foundMatches
 
@@ -209,9 +210,28 @@ print("")
 minus_fails = 0
 plus_fails = 0
 found_fails = 0
+a = 0
+b = 0
 for f in fail:
-    foundMatches = findRealPosition(f['seq'], seq, f['refstart'], f['id'])
-    found_fails += len(foundMatches)
+    f_seq = f['seq']
+
+    # since there are only fails on the negative strand, get the positive strand first
+    f_seq = reverseStrand(complementStrand(f_seq))
+    # now, get everything of the fragment up to the end of the reference
+    tmp_seq = f_seq[:len(seq)-f['refstart']]
+    # record if this matches without any further alterations
+    if match(tmp_seq, seq, f['refstart']):
+        a += 1
+
+    # get everything "beyond" the end of the reference sequence
+    tmp_seq = f_seq[len(seq)-f['refstart']:]
+    # turn it back into the negative strand
+    tmp_seq = reverseStrand(complementStrand(tmp_seq))
+    # the actual start can be found by taking the old start - length of the overflowing fragment part + length of fragment part on reference sequence
+    tmp_start = f['refstart'] - len(tmp_seq) + (len(seq)-f['refstart'])
+    if match(tmp_seq, seq, tmp_start):
+        b += 1
+
     if f['strand'] == '-':
         minus_fails += 1
     else:
@@ -220,3 +240,4 @@ for f in fail:
 print("> FAILS (no alignment possible): " + str(len(fail)-found_fails) + " of " + str(len(amplicons)))
 print("Fails on - strand " + str(minus_fails)+ "\nFails on + strand " + str(plus_fails))
 print("len(fragment)+pos(fragment) > len(ref_seq) : " + str(weird_amplicons))
+print("Successful split alignments: " + str(a) + ":" + str(b))
