@@ -124,6 +124,17 @@ void writeSeq(DNAType seq)
 }
 
 /**
+ * @brief signEqual checks if two long values are equal
+ * @param x
+ * @param y
+ * @return
+ */
+inline bool signEqual(long x, long y)
+{
+    return (x >= 0) ^ (y < 0);
+}
+
+/**
  * @brief reverseComplement
  * @param base
  * @return the complementary base (A<->T, C<->G, U->A)
@@ -1017,7 +1028,9 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
         posIndex++;
         if (posIndex < fragmentList[fragIndex].dna.size())
         {
-          occupied = (fragmentList[fragIndex].dna[posIndex].occupancy.fragmentNo1 !=0);
+          occupied = (fragmentList[fragIndex].dna[posIndex].occupancy.fragmentNo1 !=0
+                  && (posIndex+1 >= fragmentList[fragIndex].dna.size() //#2.0 check if this fragment is folded
+                      || signEqual(fragmentList[fragIndex].dna[posIndex].occupancy.original, fragmentList[fragIndex].dna[posIndex+1].occupancy.original)));
           if (fragmentList[fragIndex].dna[posIndex].occupancy.fragmentNo1 == 0)
             singleStrandCounterAtTheEnd ++;
         }
@@ -1057,7 +1070,9 @@ void cleaveFragments(string filename, double averageReadLength, FragmentID readN
         posIndex++;
         if (posIndex < fragmentList[fragIndex].dna.size())
         {
-          occupied = (fragmentList[fragIndex].dna[posIndex].occupancy.fragmentNo1 !=0);
+          occupied = (fragmentList[fragIndex].dna[posIndex].occupancy.fragmentNo1 !=0
+                  && (posIndex+1 >= fragmentList[fragIndex].dna.size() //#2.0 check if this fragment is folded
+                      || signEqual(fragmentList[fragIndex].dna[posIndex].occupancy.original, fragmentList[fragIndex].dna[posIndex+1].occupancy.original)));
           if (fragmentList[fragIndex].dna[posIndex].occupancy.fragmentNo1 == 0)
             singleStrandCounterAtTheEnd ++;
 
