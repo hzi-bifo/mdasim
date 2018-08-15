@@ -745,83 +745,83 @@ void attachPhi29(int phi29AttachmentNumCurrent)
     Primer primerAttached = primerpositionpair.first;
     Coord primerLength = primerAttached.size();
 
-        //check if the primer can be attached here (this should not happen since it's checked at initialization of the primerPositionPairs
+    //check if the primer can be attached here (this should not happen since it's checked at initialization of the primerPositionPairs
     if (fragPos.pos < primerLength)
       exitMsg((char *) "Error in attachPhi29. There is a primer position in the list which will generate a fragment of size 0 or less.", INTERNAL_WOW_ERROR);
     else
     {
-            //check if the fragment is occupied:
-            bool fragmentOccupancy = false;
-            //for the length of the primer, check if the fragment is occupied by doing the following:
-            for ( Coord k =  fragPos.pos;  k >= fragPos.pos - primerLength + 1; k--)
+      //check if the fragment is occupied:
+      bool fragmentOccupancy = false;
+      //for the length of the primer, check if the fragment is occupied by doing the following:
+      for ( Coord k =  fragPos.pos;  k >= fragPos.pos - primerLength + 1; k--)
       {
-                // in the fragmentlist, check the fragment that this one came from (?)
-                // in the dna of that fragment, get the base at position k  <= fragPos.pos
-                // and check if the occupancy has anything other for the attached fragment than 0 (== nothing)
-                fragmentOccupancy = fragmentOccupancy  || (fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(k).occupancy.fragmentNo1 != 0);
+        // in the fragmentlist, check the fragment that this one came from (?)
+        // in the dna of that fragment, get the base at position k  <= fragPos.pos
+        // and check if the occupancy has anything other for the attached fragment than 0 (== nothing)
+        fragmentOccupancy = fragmentOccupancy  || (fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(k).occupancy.fragmentNo1 != 0);
       };
-            // if the fragment is occupied, the primer position is in the list of free positions but it is not free in real, so exit with an error
-            if (fragmentOccupancy == true)
+      // if the fragment is occupied, the primer position is in the list of free positions but it is not free in real, so exit with an error
+      if (fragmentOccupancy == true)
         exitMsg((char *) "Error in attachPhi29. The primer position is in the list of free positions but it is not free on the fragment.", INTERNAL_WOW_ERROR);
-            else
+      else
       {
-                // the fragment is free at this position for this primer
+        // the fragment is free at this position for this primer
 
-                // get the position relative to the reference sequence, #2.0
-                Coord original = (-1) * fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original;
+        // get the position relative to the reference sequence, #2.0
+        Coord original = (-1) * fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.original;
 
         primerIndex ++;
 
-                // get the fragment index of end of list
+        // get the fragment index of end of list
         FragmentID fragmentIndex = FragmentID(fragmentList.size());
-                // create a new copying process struct
+        // create a new copying process struct
         Phi29 newPhi29;
-                // new fragmentIndex
+        // new fragmentIndex
         newPhi29.fragmentNo1 = fragmentIndex + 1;
-                // set a (random) expected length for this fragment
+        // set a (random) expected length for this fragment
         if ((frgAveLength / 10) == 0)
           newPhi29.expectedLength = frgAveLength;
         else
           newPhi29.expectedLength = frgAveLength + (frgAveLength / 20) - (rand() % (frgAveLength / 10));
-                // get the current coordinates of the copying process
-                Coord currentCoord = fragPos.pos - primerLength + 1;
-                // length of the new fragment can not be more than remaining part of the copied fragment
+        // get the current coordinates of the copying process
+        Coord currentCoord = fragPos.pos - primerLength + 1;
+        // length of the new fragment can not be more than remaining part of the copied fragment
         if (newPhi29.expectedLength > currentCoord)
           newPhi29.expectedLength = currentCoord;
-                // set same position parameters for fragment and copying process
+        // set same position parameters for fragment and copying process
         newPhi29.currentPosition.fragmentNo1 = fragPos.fragmentNo1;
         newPhi29.currentPosition.pos = currentCoord;
 
-                // add copying process to list
+        // add copying process to list
         phi29List.push_back(newPhi29);
 
-                // create a new fragment
+        // create a new fragment
         Fragment newFragment;
-                // for the length of the primer
+        // for the length of the primer
         for (Coord k = 0 ; k < primerLength ; k ++)
         {
-                    // create a base
+          // create a base
           FragmentBase baseTemp;
-                    // set the base according to the attached primer
+          // set the base according to the attached primer
           baseTemp.base = primerAttached.at(k);
-                    // set the occupancy to the position on the fragment as stored by the primer
+          // set the occupancy to the position on the fragment as stored by the primer
           baseTemp.occupancy = fragPos;
 
-                    baseTemp.occupancy.original = original + k; //#2.0
+          baseTemp.occupancy.original = original + k; //#2.0
 
-                    // add the new base to the new fragment
+          // add the new base to the new fragment
           newFragment.dna.push_back(baseTemp);
-                    // set the fragment occupancy of the preceding (??) fragment to the new fragment index
+          // set the fragment occupancy of the preceding (??) fragment to the new fragment index
           fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.fragmentNo1 = -(fragmentIndex + 1);
-                    // set the position of the base on the preceeding fragment relative to the new fragment (???)
-                    fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.pos = k;
-                    // delete the primer from the list of available primers
-                    deleteFromPrimerAvailability(fragPos);
-                    fragPos.pos --;
+          // set the position of the base on the preceeding fragment relative to the new fragment (???)
+          fragmentList.at(fragPos.fragmentNo1 - 1).dna.at(fragPos.pos).occupancy.pos = k;
+          // delete the primer from the list of available primers
+          deleteFromPrimerAvailability(fragPos);
+          fragPos.pos --;
         }
-                // add the new fragment to list of fragments
+        // add the new fragment to list of fragments
         fragmentList.push_back(newFragment);
-                // update single strand coverage and whole coverage
+        // update single strand coverage and whole coverage
         singleStrandCoverage = singleStrandCoverage - primerLength;
         wholeCoverage = wholeCoverage + primerLength;
       }
