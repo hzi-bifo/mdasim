@@ -83,7 +83,7 @@ Copyright 2011- Hamidreza Chitsaz (chitsaz@wayne.edu)
 #define false 0
 #endif
 
-#define PACKAGE_STRING "MDAsim 2.1.0"
+#define PACKAGE_STRING "MDAsim 2.1.1"
 
 //#define MIN(A, B)  (((A) < (B)) ? (A) : (B))
 //#define MAX(A, B)  (((A) < (B)) ? (B) : (A))

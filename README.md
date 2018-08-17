@@ -62,7 +62,7 @@ Note that the file provided under `--input` must contain exactly one sequence, s
 
 ## RAM requirements
 
-The required memory is linearly proportional to the size of the input genome and to the final coverage requested. E.g., for the S. aureus sample for which the size of the genome is in the order of 3M, to get 50x average coverage 6G RAM is needed. So please note that for a genome of size 3G to get average coverage of 50x, approximately 6T of RAM is needed. One suggestion to reduce the required memory size for large genomes is to break the genome to smaller pieces (may be with some overlaps), then apply MDAsim on each piece separately. 
+The required memory is linearly proportional to the size of the input genome and to the final coverage requested. E.g., for the S. aureus sample for which the size of the genome is in the order of 3M, to get 50x average coverage 6G RAM is needed. So please note that for a genome of size 3G to get average coverage of 50x, approximately 6T of RAM is needed. One suggestion to reduce the required memory size for large genomes is to break the genome to smaller pieces (may be with some overlaps), then apply MDAsim on each piece separately.
 
 ## output formats
 
@@ -71,7 +71,7 @@ The required memory is linearly proportional to the size of the input genome and
 The format is fasta, with the ID line of each amplicon as follows:
 
 ```
->R<IOA> | length = <LA> | ref = <POS> | strand = <S> 
+>R<IOA> | length = <LA> | ref = <POS> | strand = <S>
 ```
 * `R<IOA>`: amplicon name consisting of `R` and an amplicon index counter that starts at 1 (i.e. the last one shows the total number of amplicons in the file). Within the output file, the name of a fragment is unique.
 * `<LA>`: length of the amplicon
@@ -101,5 +101,4 @@ Smaller sizes of input fasta sequences combined with a low target coverage can g
 
 MDAsim 2 extends the original MDAsim 1.2. Whenever you use MDAsim 2, please cite both versions:
 * MDAsim 1.2 citation: [Taghavi, Z. and Draghici, S. (2012). MDAsim: a multiple displacement amplification simulator. In IEEE Conference on Bioinformatics and Biomedicine, pages 575–578.](https://doi.org/10.1109/BIBM.2012.6392622).
-* MDAsim 2 citation: Until there is a publication to cite, please cite the link to the tagged version that you use (e.g.: <https://github.com/hzi-bifo/mdasim/releases/v2.1.0>) or the exact bioconda version of the package that you use.
-
+* MDAsim 2 citation: Until there is a publication to cite, please cite the link to the tagged version that you use (e.g.: <https://github.com/hzi-bifo/mdasim/releases/v2.1.1>) or the exact bioconda version of the package that you use.
