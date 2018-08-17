@@ -124,7 +124,7 @@ void writeSeq(DNAType seq)
 }
 
 /**
- * @brief signEqual checks if two long values are equal
+ * @brief signEqual checks if two long values have equal signs
  * @param x
  * @param y
  * @return
